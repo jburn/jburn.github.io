@@ -1,9 +1,18 @@
 "use client";
 
 import Background from "@/components/background";
-import Header from "@/components/header";
+import PofoHeader from "@/components/pofo-header";
+import Hero from "@/components/hero";
+import { defaultLanguage, type LanguageCode } from "@/content/site-content";
+import { useEffect, useState } from "react";
 
-export default function PortfolioSiteStarter() {
+export default function PortfolioSite() {
+  const [language, setLanguage] = useState<LanguageCode>(defaultLanguage);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   return (
     <main className="relative isolate min-h-screen overflow-x-hidden bg-transparent text-zinc-100">
       <Background
@@ -17,7 +26,8 @@ export default function PortfolioSiteStarter() {
         animationDuration={8}
       />
       <section className="relative z-10 min-h-screen">
-        <Header />
+        <PofoHeader language={language} onLanguageChange={setLanguage} />
+        <Hero language={language} />
       </section>
     </main>
   );
