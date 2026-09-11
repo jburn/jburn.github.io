@@ -11,7 +11,6 @@ Desktop.ini
 *.log
 
 # Astro / Node build output
-node_modules/
 dist/
 .astro/
 node_modules
