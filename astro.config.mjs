@@ -6,5 +6,4 @@ export default defineConfig({
   publicDir: './assets',
   output: 'static',
   trailingSlash: 'always',
-  i18n: { defaultLocale: 'en', locales: ['en', 'fi'] },
 });
