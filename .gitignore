@@ -9,3 +9,9 @@ Desktop.ini
 
 # Debug logs
 *.log
+
+# Astro / Node build output
+node_modules/
+dist/
+.astro/
+node_modules

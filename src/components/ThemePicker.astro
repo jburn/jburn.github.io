@@ -1,0 +1,23 @@
+---
+import { translations, type Locale } from '../i18n';
+interface Props { locale: Locale }
+const t = translations[Astro.props.locale];
+---
+<label class="theme-picker">
+  <span>{t.theme}</span>
+  <select id="theme-picker" aria-label={t.theme}>
+    <option value="system">{t.system}</option>
+    <option value="light">{t.light}</option>
+    <option value="dark">{t.dark}</option>
+  </select>
+</label>
+<script>
+  const picker = document.querySelector<HTMLSelectElement>('#theme-picker');
+  if (picker) {
+    picker.value = document.documentElement.dataset.theme || 'system';
+    picker.addEventListener('change', () => {
+      document.documentElement.dataset.theme = picker.value;
+      try { localStorage.setItem('theme', picker.value); } catch { /* Storage is optional. */ }
+    });
+  }
+</script>

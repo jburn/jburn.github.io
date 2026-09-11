@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { projects } from '../data/projects';
+import { categories, taste } from '../data/taste';
+import { pageUrl, translations, type Locale, type Page } from '../i18n';
+interface Props { locale: Locale; page: Page }
+const { locale, page } = Astro.props;
+const t = translations[locale];
+const description = page === 'home' ? t.bio : page === 'projects' ? t.projectsIntro : t.tasteIntro;
+---
+<BaseLayout locale={locale} page={page} description={description}>
+  {page === 'home' ? (
+    <>
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">{t.role}</p>
+        <h1 id="hero-title">{site.name}<span class="accent">.</span></h1>
+        <p class="intro">{t.bio}</p>
+        <div class="actions"><a class="button" href={pageUrl(locale, 'projects')}>{t.explore} <span aria-hidden="true">↗</span></a><a href={site.links[2].href}>{t.contact}</a></div>
+      </section>
+      <section class="elsewhere" aria-labelledby="elsewhere-title">
+        <h2 id="elsewhere-title" class="eyebrow">{t.elsewhere}</h2>
+        <ul class="links">{site.links.map(link => <li><a href={link.href}>{link.label} <span aria-hidden="true">↗</span></a></li>)}</ul>
+      </section>
+    </>
+  ) : (
+    <>
+      <header class="page-heading"><p class="eyebrow">{site.name}</p><h1>{t[page]}<span class="accent">.</span></h1><p class="intro">{description}</p></header>
+      {page === 'projects' ? (
+        projects.length ? <div class="grid">{projects.map(project => <article class="card"><h2>{project.title}</h2><p>{project.description[locale]}</p><ul class="tags">{project.tags.map(tag => <li>{tag}</li>)}</ul><a href={project.href}>{t.view} ↗</a></article>)}</div> : <p class="empty">{t.emptyProjects}</p>
+      ) : (
+        <>
+          <nav class="category-links" aria-label={t.taste}>{categories.map(category => <a href={`#${category}`}>{t[category]}</a>)}</nav>
+          {categories.map(category => <section class="taste-section" id={category} aria-labelledby={`${category}-title`}><h2 id={`${category}-title`}>{t[category]}</h2>{taste.some(entry => entry.category === category) ? <div class="grid">{taste.filter(entry => entry.category === category).map(entry => <article class="card"><p class="eyebrow">{entry.creator}</p><h3>{entry.href ? <a href={entry.href}>{entry.title}</a> : entry.title}</h3><p>{entry.note[locale]}</p></article>)}</div> : <p class="empty">{t.emptyTaste}</p>}</section>)}
+        </>
+      )}
+    </>
+  )}
+</BaseLayout>
