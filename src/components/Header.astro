@@ -1,4 +1,6 @@
 ---
+import IconLink from "./IconLink.astro";
+
 const links = [
   { href: '/', label: 'Home' },
   { href: '/projects/', label: 'Projects' },
@@ -9,24 +11,33 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 
-
 <header>
   <nav>
-    <img src="/assets/bruun.svg" alt="Bruun" />
+    <IconLink
+      href="/"
+      icon="/assets/bruun.svg"
+      label="Home"
+      width="120px"
+      aspectRatio="105.87 / 35.52"
+    />
     <a href="/">Home</a>
     <a href="/projects/">Projects</a>
     <a href="/taste/">Taste</a>
   </nav>
 </header>
+
 <style>
     header {
         width: 100%;
         margin-inline: auto;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding-block: 2rem;
     }
     nav {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    
 </style>

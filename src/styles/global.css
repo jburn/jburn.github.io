@@ -7,7 +7,18 @@
 }
 
 body {
+    margin: 0;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
     font-family: 'Manrope', sans-serif;
+    padding-inline: 18rem;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    main {
+        flex: 1;
+        padding: 2rem;
+    }
 }
 
 button,
@@ -15,4 +26,28 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+  --color-background: #f3f6fb;
+  --color-surface: #ffffff;
+  --color-text: #172640;
+  --color-muted: #536580;
+  --color-accent: #244d83;
+  --color-border: #d3ddea;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: #0d1729;
+  --color-surface: #14223a;
+  --color-text: #edf3fc;
+  --color-muted: #acbdd6;
+  --color-accent: #9ec5ff;
+  --color-border: #2b3d59;
 }

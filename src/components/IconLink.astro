@@ -1,0 +1,46 @@
+---
+interface Props {
+    href: string;
+    icon: string;
+    label: string;
+    width?: string;
+    aspectRatio?: string;
+}
+
+const {
+    href,
+    icon,
+    label,
+    width = '1.5rem',
+    aspectRatio = '1',
+} = Astro.props;
+---
+
+
+<a href={href} aria-label={label}>
+    <span
+        aria-hidden="true"
+        style={{
+            '--icon': `url("${icon}")`,
+            '--width': width,
+            '--aspect-ratio': aspectRatio,
+        }}
+    ></span>
+</a>
+
+<style>
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text);
+    }
+
+    span {
+        display: block;
+        width: var(--width);
+        aspect-ratio: var(--aspect-ratio);
+        background-color: currentColor;
+        mask: var(--icon) center / contain no-repeat;
+    }
+</style>
