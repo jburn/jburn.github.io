@@ -1,7 +1,23 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
+
+const animation = {
+  old: {
+    name: 'content-out',
+    duration: '100ms',
+    easing: 'ease-out',
+    fillMode: 'both' as const,
+  },
+  new: {
+    name: 'content-in',
+    duration: '400ms',
+    easing: 'ease-out',
+    fillMode: 'both' as const,
+  },
+}
 
 ---
 
@@ -11,12 +27,21 @@ import '../styles/global.css';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Juho Bruun</title>
+    <ClientRouter />
   </head>
-  <body>
+  <body transition:animate="none">
     <Header />
-    <main>
+
+    <main
+      transition:name="page-content"
+      transition:animate={{
+        forwards: animation,
+        backwards: animation,
+      }}
+    >
         <slot />
     </main>
+
     <Footer />
   </body>
 </html>
