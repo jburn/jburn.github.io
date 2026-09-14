@@ -1,15 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import IconLink from '../components/IconLink.astro';
+import AsciiPortrait from '../components/AsciiPortrait.astro';
 ---
 
 <Layout>
-  <h1>Juho Bruun</h1>
-  <p class="subtitle">Software Developer</p>
-  
-  <p>
-    Welcome to my website.<br><br>I enjoy creating things: mostly software, sometimes graphics, and occasionally something harder to categorize. This site is where I collect what I’ve made, what I’m working on, and some of the things I’m into.
-  </p>
+  <div id="introduction">
+    <div>
+      <h1>Juho Bruun</h1>
+      <p class="subtitle">Software Developer</p>
+      <p>
+        Welcome to my website.<br><br>I enjoy creating things: mostly software, sometimes graphics, and occasionally something harder to categorize. This site is where I collect what I’ve made, what I’m working on, and some of the things I’m into.
+      </p>
+    </div>
+    
+    <AsciiPortrait />
+  </div>
+
   <hr/>
   <h3>Contact me:</h3>
   <nav>
@@ -50,5 +57,12 @@ import IconLink from '../components/IconLink.astro';
     margin-bottom: 2rem;
     font-size: 1.25rem;
     color: var(--color-muted);
+  }
+
+  #introduction {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 2rem;
   }
 </style>

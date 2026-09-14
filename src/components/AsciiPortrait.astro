@@ -1,0 +1,25 @@
+---
+import portrait from '/assets/ascii-portrait.txt?raw';
+---
+
+<pre
+  class="portrait"
+  role="img"
+  aria-label="Portrait of Juho Bruun"
+>{portrait}</pre>
+<style>
+    .portrait {
+    margin: 0;
+    font-family: monospace;
+    font-size: clamp(2.5px, 0.5vw, 6px);
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: pre;
+    color: var(--color-muted);
+    padding: 1.5rem;
+    width: fit-content;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+  }
+</style>
