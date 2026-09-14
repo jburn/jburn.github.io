@@ -12,13 +12,21 @@ body {
     display: flex;
     flex-direction: column;
     font-family: 'Manrope', sans-serif;
-    padding-inline: 18rem;
+    padding-inline: 1rem;
     background-color: var(--color-background);
     color: var(--color-text);
     main {
         flex: 1;
         padding: 2rem;
     }
+}
+
+header,
+main,
+footer {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
 }
 
 button,

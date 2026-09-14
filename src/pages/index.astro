@@ -1,8 +1,54 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import IconLink from '../components/IconLink.astro';
 ---
 
 <Layout title="Juho Bruun">
-  <h1>Home</h1>
-  <p>Welcome to my personal website. Here you can find information about me, my projects, and my favorite media.</p>
+  <h1>Juho Bruun</h1>
+  <p class="subtitle">Software Developer</p>
+  
+  <p>
+    Welcome to my website.<br><br>I like creating things: mostly software, sometimes graphics, and occasionally something harder to categorize. This site is where I collect what I’ve made, what I’m working on, and some of the things I’m into.
+  </p>
+  <hr/>
+  <h3>Contact me:</h3>
+  <nav>
+    <IconLink
+      href="https://www.linkedin.com/in/juhobruun/"
+      icon="/assets/linkedin.svg"
+      label="LinkedIn"
+      width="3.5rem"
+      />
+    <IconLink
+      href="mailto:juho.bruun@iki.fi"
+      icon="/assets/email.svg"
+      label="GitHub"
+      width="3.5rem"
+      />
+    <IconLink
+      href="https://github.com/jburn"
+      icon="/assets/github.svg"
+      label="GitHub"
+      width="3.5rem"
+      />
+  </nav>
 </Layout>
+
+<style>
+  nav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    color: var(--color-muted);
+  }
+</style>
