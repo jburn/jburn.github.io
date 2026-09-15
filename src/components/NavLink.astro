@@ -15,7 +15,11 @@ const isActive =
   (targetPath !== '/' && currentPath.startsWith(`${targetPath}/`));
 ---
 
-<a href={href} aria-current={isActive ? 'page' : undefined}>
+<a
+    href={href}
+    aria-current={isActive ? 'page' : undefined}
+    onclick={currentPath === targetPath ? 'event.preventDefault()' : undefined}
+    >
     {label}
 </a>
 
