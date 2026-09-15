@@ -55,6 +55,8 @@ textarea {
   --color-muted: #526f93;
   --color-accent: #244d83;
   --color-border: #d3ddea;
+  --toggle-background: #0d1729;
+  --toggle-color: #edf3fc;
 }
 
 :root[data-theme='dark'] {
@@ -65,6 +67,8 @@ textarea {
   --color-muted: #acbdd6;
   --color-accent: #9ec5ff;
   --color-border: #2b3d59;
+  --toggle-background: #f3f6fb;
+  --toggle-color: #12519e;
 }
 
 @keyframes content-out {

@@ -1,0 +1,116 @@
+---
+
+
+---
+
+<button
+    type="button"
+    id="theme-toggle"
+    aria-label="Switch color theme"
+    >
+    <span aria-hidden="true"></span>
+</button>
+
+<style>
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border-radius: 50%;
+        border: none;
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        cursor: pointer;
+        transition: color 250ms ease;
+    }
+
+    span {
+        width: 2rem;
+        height: 2rem;
+        background: currentColor;
+        mask: var(--theme-icon, url('/assets/dark.svg'))
+            center / contain no-repeat;
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--toggle-background);
+        transform: scale(0);
+        transition: transform 300ms ease;
+        z-index: -1;
+    }
+
+    button:hover::before,
+    button:focus-visible::before {
+        transform: scale(1);
+    }
+
+    button:focus-visible,
+    button:hover {
+        color: var(--toggle-color);
+    }
+
+    button:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        button,
+        button::before {
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
+        if (!button) return;
+
+        const root = document.documentElement;
+
+        const updateButton = () => {
+            const isDark = root.dataset.theme === 'dark';
+            const label = isDark
+                ? 'Switch to light mode'
+                : 'Switch to dark mode';
+
+            button.style.setProperty(
+                '--theme-icon',
+                `url('/assets/${isDark ? 'light' : 'dark'}.svg')`
+            );
+
+            button.setAttribute('aria-label', label);
+            button.title = label;
+            
+            button.setAttribute(
+                'aria-pressed',
+                String(root.dataset.theme === 'dark')
+            );
+        }
+
+        updateButton();
+
+        button.addEventListener('click', () => {
+            const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+            root.dataset.theme = theme;
+            try {
+                localStorage.setItem('theme', theme);
+            } catch {
+                // The toggle still works if storage is unavailable.
+            }
+
+            updateButton();
+        });
+    });
+</script>
