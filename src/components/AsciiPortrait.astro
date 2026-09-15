@@ -3,15 +3,16 @@ import portrait from '/assets/ascii-portrait.txt?raw';
 ---
 
 <pre
-  class="portrait"
+  id="portrait"
   role="img"
   aria-label="Portrait of Juho Bruun"
 >{portrait}</pre>
+
 <style>
-    .portrait {
+    #portrait {
     margin: 0;
     font-family: monospace;
-    font-size: clamp(2.5px, 0.5vw, 6px);
+    font-size: 6px;
     line-height: 1;
     letter-spacing: 0;
     white-space: pre;
@@ -22,4 +23,54 @@ import portrait from '/assets/ascii-portrait.txt?raw';
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
   }
+
+  @media (max-width: 48rem) {
+    #portrait {
+      display: none;
+    }
+  }
 </style>
+
+<script>
+  const delay = (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function animatePortrait() {
+    const element = document.querySelector('#portrait');
+    if (!element) return;
+
+    const characters = '.,:;+*?%S#@';
+
+    const original = element?.textContent ?? '';
+    const originalRows = original.split('\n').map(row => [...row]);
+    const rows = original.split('\n').map(row => [...row]);
+    const loopLen = rows[0].length + rows.length - 1;
+    
+    while (element.isConnected) {
+      for (let n = 0; n < loopLen; n++) {
+        const rows = originalRows.map(row => [...row]);
+        for (let row = 0; row <= n; row++) { 
+          const col = n - row;
+
+          if (row >= rows.length) continue;
+          if (col < 0 || col >= rows[row].length) continue;
+
+          const ci = characters.indexOf(rows[row][col]);
+          const nextIndex = (ci + 1) % characters.length;
+          const nextChar = characters[nextIndex];
+          
+          rows[row][col] = nextChar;
+        }
+        element.textContent = rows.map(row => row.join('')).join('\n');
+        await delay(100);
+      }
+      element.textContent = original;
+      await delay(2000);
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    animatePortrait();
+  });
+</script>

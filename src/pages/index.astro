@@ -64,5 +64,15 @@ import AsciiPortrait from '../components/AsciiPortrait.astro';
     flex-direction: row;
     gap: 2rem;
     padding: 2rem;
+    align-items: flex-start;
   }
+  
+
+  @media (max-width: 600px) {
+  #introduction {
+    flex-direction: column;
+    padding: 0;
+    gap: 2rem;
+  }
+}
 </style>

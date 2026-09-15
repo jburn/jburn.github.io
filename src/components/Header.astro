@@ -1,14 +1,6 @@
 ---
 import IconLink from "./IconLink.astro";
 import NavLink from "./NavLink.astro";
-
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/projects/', label: 'Projects' },
-  { href: '/taste/', label: 'Taste' },
-];
-
-const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 
@@ -20,6 +12,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
       width="120px"
       aspectRatio="105.87 / 35.52"
     />
+
   <nav>
     <NavLink href="/" label="Home" />
     <NavLink href="/projects/" label="Projects" />
@@ -41,9 +34,37 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         z-index: 10;
         padding-block: 2rem;
     }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 -1rem;
+      z-index: -1;
+      pointer-events: none;
+
+      background: linear-gradient(
+        to bottom,
+        var(--color-background) 0,
+        var(--color-background) calc(100% - 2rem),
+        transparent 100%
+      );
+    }
+
     nav {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      nav {
+        flex-wrap: wrap;
+      }
+
     }
 </style>
