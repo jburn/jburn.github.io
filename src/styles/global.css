@@ -43,6 +43,55 @@ textarea {
   font: inherit;
 }
 
+body,
+header,
+footer,
+pre,
+a,
+button {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  header,
+  footer,
+  pre,
+  a,
+  button {
+    transition: none;
+  }
+}
+
+/* Capture everything together, including Astro's named page content. */
+html.theme-changing * {
+  view-transition-name: none !important;
+}
+
+/* Avoid capturing partially transitioned theme colors. */
+html.theme-changing *,
+html.theme-changing *::before,
+html.theme-changing *::after {
+  transition: none !important;
+}
+
+html.theme-changing::view-transition-old(root),
+html.theme-changing::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-changing::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-changing::view-transition-new(root) {
+  z-index: 2;
+}
+
 * {
   box-sizing: border-box;
 }

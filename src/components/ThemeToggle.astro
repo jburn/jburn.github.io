@@ -101,16 +101,64 @@
 
         updateButton();
 
-        button.addEventListener('click', () => {
-            const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-            root.dataset.theme = theme;
-            try {
+        button.addEventListener('click', async () => {
+            if (root.classList.contains('theme-changing')) return;
+
+            const applyTheme = () => {
+                const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                root.dataset.theme = theme;
+
+                try {
                 localStorage.setItem('theme', theme);
-            } catch {
-                // The toggle still works if storage is unavailable.
+                } catch {}
+
+                updateButton();
+            };
+
+            // do instant switch if reduced motion is preferred
+            if (
+                !document.startViewTransition ||
+                matchMedia('(prefers-reduced-motion: reduce)').matches
+            ) {
+                applyTheme();
+                return;
             }
 
-            updateButton();
-        });
+            const bounds = button.getBoundingClientRect();
+            const x = bounds.left + bounds.width / 2;
+            const y = bounds.top + bounds.height / 2;
+
+            const radius = Math.hypot(
+                Math.max(x, innerWidth - x),
+                Math.max(y, innerHeight - y)
+            );
+
+            root.classList.add('theme-changing');
+
+            const transition = document.startViewTransition(applyTheme);
+
+            try {
+                await transition.ready;
+
+                await root.animate(
+                {
+                    clipPath: [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${radius}px at ${x}px ${y}px)`,
+                    ],
+                },
+                {
+                    duration: 600,
+                    easing: 'ease-in-out',
+                    pseudoElement: '::view-transition-new(root)',
+                }
+                ).finished;
+            } catch {
+                // The theme still changes if the animation is skipped.
+            } finally {
+                await transition.finished.catch(() => {});
+                root.classList.remove('theme-changing');
+            }
+            });
     });
 </script>
