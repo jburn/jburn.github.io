@@ -36,6 +36,54 @@ import portrait from '/assets/ascii-portrait.txt?raw';
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  async function waitUntilVisible(element: Element) {
+    while (
+      element.isConnected &&
+      (document.hidden || element.getClientRects().length === 0)
+    ) {
+      await delay(250);
+    }
+
+    return element.isConnected;
+  }
+
+  async function revealPortrait() {
+    const element = document.querySelector('#portrait');
+    if (!element) return;
+
+    const original = element.textContent ?? '';
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const originalRows = original.replace(/\r\n/g, '\n')
+      .split('\n')
+      .map(row => [...row]);
+
+    const rows = originalRows.map(row => row.map(() => ' '));
+
+    const height = rows.length;
+    const width = Math.max(...rows.map(row => row.length));
+
+    element.textContent = rows.map(row => row.join('')).join('\n');
+
+    for (let diagonal = 0; diagonal < width + height - 1; diagonal++) {
+      if (!(await waitUntilVisible(element))) return;
+
+      for (let row = 0; row < height; row++) {
+        const col = diagonal - row;
+
+        if (col < 0 || col >= rows[row].length) continue;
+
+        rows[row][col] = originalRows[row][col];
+      }
+
+      element.textContent = rows.map(row => row.join('')).join('\n');
+      await delay(10);
+    }
+
+    element.textContent = original;
+  }
+
   async function animatePortrait() {
     const element = document.querySelector('#portrait');
     if (!element) return;
@@ -44,13 +92,16 @@ import portrait from '/assets/ascii-portrait.txt?raw';
 
     const original = element?.textContent ?? '';
     const originalRows = original.split('\n').map(row => [...row]);
-    const rows = original.split('\n').map(row => [...row]);
-    const loopLen = rows[0].length + rows.length - 1;
+    const loopLen = originalRows[0].length + originalRows.length - 1;
     
     while (element.isConnected) {
       for (let n = 0; n < loopLen; n++) {
+        if (!(await waitUntilVisible(element))) return;
+        if (Math.random() > 0.8) continue;
         const rows = originalRows.map(row => [...row]);
+
         for (let row = 0; row <= n; row++) { 
+          if (Math.random() > 0.8) continue;
           const col = n - row;
 
           if (row >= rows.length) continue;
@@ -62,15 +113,51 @@ import portrait from '/assets/ascii-portrait.txt?raw';
           
           rows[row][col] = nextChar;
         }
+
         element.textContent = rows.map(row => row.join('')).join('\n');
         await delay(100);
+
+        if (Math.random() < 0.01) {
+
+          const rowIndex = Math.floor(Math.random() * rows.length);
+          const savedRow = [...rows[rowIndex]];
+
+          if (savedRow.length > 0) {
+            rows[rowIndex] = [' ', ...savedRow.slice(0, -1)];
+            element.textContent = rows.map(row => row.join('')).join('\n');
+
+            await delay(80);
+
+            rows[rowIndex] = savedRow;
+            element.textContent = rows.map(row => row.join('')).join('\n');
+          }
+        }
+
+        const r = Math.random();
+        if (r < 0.05 && n >= 2) {
+          n = n - 2;
+        }
+        if (r > 0.95) {
+          await delay(60 + Math.random() * 90)
+        }
+        
       }
       element.textContent = original;
-      await delay(2000);
+      await delay(1000 + Math.random() * 4000);
     }
   }
 
-  document.addEventListener('astro:page-load', () => {
+  document.addEventListener('astro:page-load', async () => {
+    const element = document.querySelector('#portrait');
+    if (!element) return;
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    await revealPortrait();
+    await delay(1500);
+
+    if (!element.isConnected) return;
+
     animatePortrait();
   });
 </script>
