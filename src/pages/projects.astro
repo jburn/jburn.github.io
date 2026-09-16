@@ -5,19 +5,27 @@ import ProjectPreview from '../components/ProjectPreview.astro';
 
 <Layout title="Projects">
   <div class="project-list">
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
-    <hr />
-    <ProjectPreview />
+    <div class="project-entry" style="--delay: 0ms">
+      <ProjectPreview />
+    </div>
+
+    <hr style="--delay: 100ms"/>
+    
+    <div class="project-entry" style="--delay: 200ms">
+      <ProjectPreview />
+    </div>
+
+    <hr style="--delay: 300ms"/>
+
+    <div class="project-entry" style="--delay: 400ms">
+      <ProjectPreview />
+    </div>
+
+    <hr style="--delay: 500ms"/>
+
+    <div class="project-entry" style="--delay: 600ms">
+      <ProjectPreview />
+    </div>
   </div>
 </Layout>
 
@@ -27,5 +35,28 @@ import ProjectPreview from '../components/ProjectPreview.astro';
     margin: 0 auto;
     border: 0;
     border-top: 1px solid var(--color-border);
+  }
+
+  .project-entry {
+    animation: reveal-project 600ms ease-out both;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes reveal-project {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-entry {
+      animation: none;
+    }
   }
 </style>
