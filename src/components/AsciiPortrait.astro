@@ -127,6 +127,7 @@ import portrait from '/assets/ascii-portrait.txt?raw';
             element.textContent = rows.map(row => row.join('')).join('\n');
 
             await delay(80);
+            if (!element.isConnected) return;
 
             rows[rowIndex] = savedRow;
             element.textContent = rows.map(row => row.join('')).join('\n');
@@ -140,6 +141,7 @@ import portrait from '/assets/ascii-portrait.txt?raw';
         if (r > 0.95) {
           await delay(60 + Math.random() * 90)
         }
+        if (!element.isConnected) return;
         
       }
       element.textContent = original;
