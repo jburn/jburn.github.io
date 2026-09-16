@@ -25,10 +25,15 @@
             background-color 250ms ease;
     }
 
-    @media (hover: hover) {
-    .preview-container:hover {
+    @media (hover: hover) and (pointer: fine) {
+        .preview-container:hover {
             z-index: 1;
-            transform: scale(1.02);
+            transform:
+            perspective(1000px)
+            rotateX(var(--tilt-x, 0deg))
+            rotateY(var(--tilt-y, 0deg))
+            scale(1.02);
+
             background-color: var(--color-surface);
             box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
         }
@@ -50,7 +55,7 @@
 
     .preview-container img {
         width: 33%;
-        aspect-ration: 16 / 10;
+        aspect-ratio: 16 / 10;
         object-fit: cover;
     }
 
@@ -84,3 +89,49 @@
         }
     }
 </style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const motionAllowed = matchMedia(
+      '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
+    );
+
+    document.querySelectorAll<HTMLElement>('.preview-container')
+      .forEach(card => {
+        const wrapper = card.closest<HTMLElement>('.project-entry');
+        if (!wrapper) return;
+
+        const reset = () => {
+          card.style.removeProperty('--tilt-x');
+          card.style.removeProperty('--tilt-y');
+        };
+
+        card.addEventListener('pointermove', event => {
+          if (!motionAllowed.matches || event.pointerType === 'touch') {
+            reset();
+            return;
+          }
+
+          const bounds = wrapper.getBoundingClientRect();
+
+          const x = Math.max(-1, Math.min(
+            1,
+            ((event.clientX - bounds.left) / bounds.width) * 2 - 1
+          ));
+
+          const y = Math.max(-1, Math.min(
+            1,
+            ((event.clientY - bounds.top) / bounds.height) * 2 - 1
+          ));
+
+          const strength = 2;
+
+          card.style.setProperty('--tilt-x', `${-y * strength}deg`);
+          card.style.setProperty('--tilt-y', `${x * strength}deg`);
+        });
+
+        card.addEventListener('pointerleave', reset);
+        card.addEventListener('pointercancel', reset);
+      });
+  });
+</script>
