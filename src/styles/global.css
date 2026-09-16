@@ -106,6 +106,7 @@ html.theme-changing::view-transition-new(root) {
   --color-border: #d3ddea;
   --toggle-background: #0d1729;
   --toggle-color: #edf3fc;
+  --color-link-hover: #2878d4;
 }
 
 :root[data-theme='dark'] {
