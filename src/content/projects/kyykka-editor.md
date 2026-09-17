@@ -8,6 +8,7 @@ technologies:
   - GitHub Actions
   - PySide
 github: https://github.com/jburn/kyykka-editor
+order: 1
 ---
 
 ## Overview
