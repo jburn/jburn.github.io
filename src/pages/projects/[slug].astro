@@ -1,0 +1,44 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+
+  return projects.map(project => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<Layout title={project.data.title}>
+  <article>
+    <h1>{project.data.title}</h1>
+    <p>{project.data.summary}</p>
+
+    <Content />
+
+    {project.data.github && (
+      <p>
+        <a href={project.data.github}>View on GitHub ↗</a>
+      </p>
+    )}
+  </article>
+</Layout>
+
+<style>
+  article :global(img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+</style>

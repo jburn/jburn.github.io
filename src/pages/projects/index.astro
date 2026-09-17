@@ -1,31 +1,33 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import ProjectPreview from '../../components/ProjectPreview.astro';
+
+const projects = await getCollection('projects');
+
 ---
 
 <Layout title="Projects">
   <div class="project-list">
-    <div class="project-entry" style="--delay: 0ms">
-      <ProjectPreview />
-    </div>
+    {projects.map((project, index) => (
+      <>
+        {index > 0 && (
+          <hr style={`--delay: ${index * 100}ms`} />
+        )}
 
-    <hr style="--delay: 100ms"/>
-    
-    <div class="project-entry" style="--delay: 200ms">
-      <ProjectPreview />
-    </div>
-
-    <hr style="--delay: 300ms"/>
-
-    <div class="project-entry" style="--delay: 400ms">
-      <ProjectPreview />
-    </div>
-
-    <hr style="--delay: 500ms"/>
-
-    <div class="project-entry" style="--delay: 600ms">
-      <ProjectPreview />
-    </div>
+        <div
+          class="project-entry"
+          style={`--delay: ${index * 100}ms`}
+        >
+          <ProjectPreview
+            href={`/projects/${project.id}/`}
+            title={project.data.title}
+            summary={project.data.summary}
+            image={project.data.image}
+          />
+        </div>
+      </>
+    ))}
   </div>
 </Layout>
 

@@ -66,6 +66,10 @@ button {
   }
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Capture everything together, including Astro's named page content. */
 html.theme-changing * {
   view-transition-name: none !important;
