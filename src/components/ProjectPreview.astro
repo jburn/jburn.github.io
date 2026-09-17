@@ -1,9 +1,20 @@
+---
+interface Props {
+    href: string;
+    title: string;
+    summary: string;
+    image:string;
+}
 
-<a class="preview-container" href="/">
-    <img src="/assets/nl.svg">
+const { href, title, summary, image } = Astro.props;
+---
+
+
+<a class="preview-container" href={href}>
+    <img src={image}>
     <div>
-        <h2>Title</h2>
-        <p>Short paragraph about the project. Lets gooo</p>
+        <h2>{title}</h2>
+        <p>{summary}</p>
     </div>
 </a>
 
@@ -58,6 +69,7 @@
         aspect-ratio: 16 / 10;
         object-fit: cover;
         border-radius: 1rem;
+        border: 1px solid var(--color-border);
     }
 
     .preview-container:focus-visible {
