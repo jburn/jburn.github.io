@@ -1,6 +1,6 @@
 ---
 title: Kyykkä Editor
-summary: A desktop application hyperfocused on kyykkä video editing
+summary: A purpose-built desktop editor that turns timestamped kyykkä throws into publishable match videos
 image: /assets/projects/kyykka-editor/editor.png
 technologies:
   - Python
@@ -13,7 +13,7 @@ order: 1
 
 ## Overview
 
-Kyykkä Editor is a desktop application with the explicit purpose of editing kyykkä videos. The whole application is built around the workflow of quickly skimming through the source video and marking moments of impact of throws with configurable hotkeys, after which the application renders fully edited and publishable videos. This saves time and effort for the editor, since they don't have to manually mark start and end of each clip, or add title/result cards. A GitHub Actions workflow builds a shareable and runnable .exe file for windows users to easily use the software, with the option of manually building it for security-concerned users. 
+Editing kyykkä match videos manually is repetitive: every throw needs to be located and clipped, and title, round-end, and result screens need to be added separately. Kyykkä Editor reduces that workflow to marking each throw’s impact moment with a hotkey. From those markers, it automatically produces the clips and generates the surrounding match graphics. A GitHub Actions workflow builds the application into a distributable Windows executable. Users who prefer not to run pre-built binaries can also build the application from source.
 
 ## How it works
 
@@ -21,11 +21,11 @@ Users import their video and insert match details, including scores, team names,
 
 ![Match details](/assets/projects/kyykka-editor/match-details.png)
 
-With the video and match details loaded, users can then proceed to mark the impact moment of each throw, with Kyykkä editor automatically clipping each throw with pre-determined overridable timers before and after impact that fit 99% of kyykkä players throwing style.
+With the video and match details loaded, the user skims through the match and marks each throw's impact moment using a configurable hotkey. For each marker, the editor calculates the clip boundaries using configurable offsets before and after the impact. The defaults are tuned to cover the throwing sequence of most players, while individual clips can be adjusted when necessary.
 
 ![Main editor screen](/assets/projects/kyykka-editor/editor.png)
 
-Kyykkä editor exports a fully edited, publishable kyykkä video with a title screen, round end screen and a game result screen at the end.
+Kyykkä Editor exports a fully edited, publishable kyykkä video with a title screen, round-end screen and a game-end screen at the end.
 
 ![Export](/assets/projects/kyykka-editor/export.png)
 
@@ -39,10 +39,14 @@ The language, title/round-end/game-end screen styles and hotkeys are also fully 
 
 ## Design decisions
 
-Decided to use PySide for UI since I was already familiar with it from university courses. FFmpeg was a no-brainer of a choice for the media editing part, due to its wide community support and maintentance, and wide featureset.
+The core design constraint was to preserve the four-button workflow of the original prototype. Instead of gradually turning the application into a general-purpose video editor, I added features only when they supported the kyykkä editing workflow.
 
-I built the first prototype as a barebones script allowing a workflow to edit kyykkä videos with just 4 buttons, with no need to manually check for individual start/end times for clips. After that, each feature added was built to support the fast and effortless 4-button workflow. Added just enough configuration options to allow for distinct editing styles, without even trying to compete with the featureset of a commercial video editing software. The end result is a focused, fast and light video editing software explicitly for kyykkä videos.
+Using the impact moment as the only required timestamp keeps the interaction minimal while still providing enough information to automatically determine the start and end of each throw.
+
+I chose PySide for the UI because I was already familiar with it from university courses. FFmpeg was a natural choice for the media processing due to its extensive feature set, active maintenance, and broad community support.
 
 ## What I learned
 
-The learning part in this project was definitely using FFmpeg inside a program, since I had earlier used it only as a command-line tool. I was amazed by its versatility.
+Building the smallest usable workflow first made it easier to evaluate later features: if a feature didn't make the core editing workflow faster, simpler, or more flexible, it probably didn't belong in the application. This project gave me yet another chance to refine the simple and effective software development process: *Proof of concept → structure → supporting features → polish → release.*
+
+On the technical side, the project gave me practical experience integrating FFmpeg into an application rather than using it interactively from the command line, particularly around constructing commands programmatically and managing the rendering pipeline.
