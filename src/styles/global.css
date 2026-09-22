@@ -111,6 +111,7 @@ html.theme-changing::view-transition-new(root) {
   --toggle-background: #0d1729;
   --toggle-color: #edf3fc;
   --color-link-hover: #2878d4;
+  --thumbnail-shadow: 3px 3px 8px rgb(0 0 0 / 15%);
 }
 
 :root[data-theme='dark'] {
@@ -123,6 +124,7 @@ html.theme-changing::view-transition-new(root) {
   --color-border: #2b3d59;
   --toggle-background: #f3f6fb;
   --toggle-color: #12519e;
+  --thumbnail-shadow: 3px 3px 10px rgb(158 197 255 / 10%);
 }
 
 @keyframes content-out {
