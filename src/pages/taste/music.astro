@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import BackLink from "../../components/BackLink.astro";
+import PageHeading from "../../components/PageHeading.astro";
 import AlbumCard from '../../components/AlbumCard.astro';
 import AlbumDialog from "../../components/AlbumDialog.astro";
 import { favouriteAlbums, coverUrl } from '../../data/music';
@@ -18,8 +18,7 @@ const [collection, favourites] = await Promise.all([
 ---
 
 <Layout title="Music">
-    <BackLink href="/taste/" label="Taste" />
-    <h1>Music</h1>
+    <PageHeading title="Music" backHref="/taste/" backLabel="Taste" />
     <section aria-labelledby="favourites-title">
       <h2 id="favourites-title">All-time favourite albums</h2>
       <div class="album-grid favourites-grid">

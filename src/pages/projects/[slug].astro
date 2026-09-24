@@ -1,6 +1,6 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import BackLink from '../../components/BackLink.astro';
+import PageHeading from '../../components/PageHeading.astro';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
@@ -21,9 +21,8 @@ const { Content } = await render(project);
 ---
 
 <Layout title={project.data.title}>
-  <BackLink href='/projects/' label='Projects'/>
   <article>
-    <h1>{project.data.title}</h1>
+    <PageHeading title={project.data.title} backHref="/projects/" backLabel="Projects" />
     <p>{project.data.summary}</p>
     <ul class="technologies">
         {project.data.technologies.map(technology => (
