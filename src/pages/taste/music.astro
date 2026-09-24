@@ -57,13 +57,26 @@ const [collection, favourites] = await Promise.all([
       </div>
     </section>
     <section class="collection-section" aria-labelledby="collection-title">
-      <h2 id="collection-title">Record collection</h2>
-      <p class="section-description">The records on my shelf currently.</p>
-      <div class="album-grid">
+      <div class="collection-heading-container">
+        <div class="collection-heading">
+        <h2 id="collection-title">Record collection</h2>
+        <p class="section-description">The records on my shelf currently.</p>
+      </div>
+      <div class="collection-sort" id="collection-sort">
+        <button type="button" data-sort-field="artist" aria-controls="record-collection" aria-label="Sorting by artist. Switch to album">Artist</button>
+        <button type="button" data-sort-direction="asc" aria-controls="record-collection" aria-label="Ascending order. Switch to descending">
+          <svg class="sort-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5m-6 6 6-6 6 6" />
+          </svg>
+        </button>
+      </div>
+      </div>
+      
+      <div class="album-grid" id="record-collection">
         {collection.map((record, index) => {
             const dialogId = `record-${record.instanceId}`;
             return (
-                <>
+                <div class="record-entry" data-artist={record.artist} data-title={record.title} data-dialog-id={dialogId}>
                 <AlbumCard
                     title={record.title}
                     artist={record.artist}
@@ -76,7 +89,7 @@ const [collection, favourites] = await Promise.all([
                     position={index + 1}
                     total={collection.length}
                 />
-                </>
+                </div>
             );
         })}
       </div>  
@@ -88,6 +101,86 @@ const [collection, favourites] = await Promise.all([
 </Layout>
 
 <style>
+.record-entry {
+  min-width: 0;
+}
+
+.collection-sort {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-left: auto;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.collection-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.collection-heading h2 {
+  margin: 0;
+}
+
+.collection-heading-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.collection-sort button {
+  min-width: 5.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.collection-sort button:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--thumbnail-shadow);
+}
+
+.collection-sort button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.collection-sort button[data-sort-direction] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  width: 2.75rem;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.sort-arrow {
+  transform: rotate(180deg);
+  transition: transform 250ms ease;
+}
+
+[data-sort-direction='desc'] .sort-arrow {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-sort button { transition: none; }
+  .sort-arrow { transition: none; }
+}
+
 section {
     margin-block: 2rem 3rem;
 }
@@ -122,12 +215,64 @@ section.collection-section {
   border-top: 1px solid var(--color-border);
 }
 
-.collection-section h2 {
-  margin-bottom: 0.5rem;
-}
 
 .section-description {
   margin: 0 0 2rem;
   color: var(--color-muted);
 }
 </style>
+
+<script>
+  const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+  function sortCollection() {
+    const controls = document.querySelector<HTMLElement>('#collection-sort');
+    const grid = document.querySelector<HTMLElement>('#record-collection');
+    if (!controls || !grid) return;
+
+    const field = controls.querySelector<HTMLButtonElement>('[data-sort-field]')?.dataset.sortField === 'title' ? 'title' : 'artist';
+    const secondary = field === 'artist' ? 'title' : 'artist';
+    const direction = controls.querySelector<HTMLButtonElement>('[data-sort-direction]')?.dataset.sortDirection === 'desc' ? -1 : 1;
+    const entries = Array.from(grid.querySelectorAll<HTMLElement>(':scope > .record-entry'));
+    entries.sort((a, b) =>
+      direction * collator.compare(a.dataset[field] ?? '', b.dataset[field] ?? '') ||
+      collator.compare(a.dataset[secondary] ?? '', b.dataset[secondary] ?? '') ||
+      collator.compare(a.dataset.dialogId ?? '', b.dataset.dialogId ?? ''),
+    );
+
+    entries.forEach((entry, index) => {
+      grid.append(entry);
+      const previous = entry.querySelector<HTMLButtonElement>('button[data-direction="previous"]');
+      const next = entry.querySelector<HTMLButtonElement>('button[data-direction="next"]');
+      for (const [button, neighbour] of [[previous, entries[index - 1]], [next, entries[index + 1]]] as const) {
+        if (!button) continue;
+        button.disabled = !neighbour;
+        if (neighbour) button.dataset.albumTarget = neighbour.dataset.dialogId;
+        else delete button.dataset.albumTarget;
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', sortCollection);
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLButtonElement>('#collection-sort button');
+    if (!button) return;
+
+    if (button.dataset.sortField) {
+      const artist = button.dataset.sortField !== 'artist';
+      button.dataset.sortField = artist ? 'artist' : 'title';
+      button.textContent = artist ? 'Artist' : 'Album';
+      button.setAttribute('aria-label', artist
+        ? 'Sorting by artist. Switch to album'
+        : 'Sorting by album. Switch to artist');
+    } else {
+      const ascending = button.dataset.sortDirection !== 'asc';
+      button.dataset.sortDirection = ascending ? 'asc' : 'desc';
+      button.setAttribute('aria-label', ascending
+        ? 'Ascending order. Switch to descending'
+        : 'Descending order. Switch to ascending');
+    }
+    sortCollection();
+  });
+</script>
