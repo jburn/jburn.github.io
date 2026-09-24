@@ -22,13 +22,17 @@ const { title, artist, image, dialogId } = Astro.props;
       : <span>No cover available</span>
       }
     </button>
-  <h3>{title}</h3>
-  <p>{artist}</p>
+  <h3 data-album-text>{title}</h3>
+  <p data-album-text>{artist}</p>
   
   
 </div>
 
 <style>
+  [data-album-text] {
+    cursor: pointer;
+  }
+
   .album-card {
     display: block;
     min-width: 0;
@@ -101,3 +105,13 @@ const { title, artist, image, dialogId } = Astro.props;
     }
   }
 </style>
+
+<script>
+  // The cover remains the keyboard-accessible button for the same action.
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    const text = event.target.closest('[data-album-text]');
+    text?.closest('.album-card')
+      ?.querySelector<HTMLButtonElement>('button[data-album-dialog]')?.click();
+  });
+</script>
