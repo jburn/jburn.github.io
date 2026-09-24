@@ -1,13 +1,133 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import BackLink from "../../components/BackLink.astro";
+import AlbumCard from '../../components/AlbumCard.astro';
+import AlbumDialog from "../../components/AlbumDialog.astro";
+import { favouriteAlbums, coverUrl } from '../../data/music';
+import { getDiscogsCollection } from '../../lib/discogs';
+import { getAlbumMetadata } from '../../lib/musicbrainz';
+
+const username = import.meta.env.DISCOGS_USERNAME?.trim();
+const [collection, favourites] = await Promise.all([
+  username ? getDiscogsCollection(username) : Promise.resolve([]),
+  Promise.all(favouriteAlbums.map(async album => ({
+    ...album,
+    ...await getAlbumMetadata(album.releaseGroupId),
+  }))),
+]);
 ---
 
-<Layout>
+<Layout title="Music">
     <BackLink href="/taste/" label="Taste" />
     <h1>Music</h1>
-    <h2>All-time favourite albums</h2>
-    <h2>Record collection</h2>
+    <section aria-labelledby="favourites-title">
+      <h2 id="favourites-title">All-time favourite albums</h2>
+      <div class="album-grid favourites-grid">
+        {favourites.map((album, index) => {
+            const dialogId = `favourite-${index}`;
+            const image = coverUrl(album.releaseGroupId);
+
+            return (
+                <>
+                <AlbumCard
+                    title={album.title}
+                    artist={album.artist}
+                    image={image}
+                    dialogId={dialogId}
+                />
+                <AlbumDialog
+                    id={dialogId}
+                    previousId={index > 0 ? `favourite-${index - 1}` : undefined}
+                    nextId={index < favourites.length - 1 ? `favourite-${index + 1}` : undefined}
+                    position={index + 1}
+                    total={favourites.length}
+                    spotifyTrackId={album.spotifyTrackId}
+                    note={album.note}
+                    soundcloudUrl={album.soundcloudUrl}
+                    year={album.year}
+                    genres={album.genres}
+                    title={album.title}
+                    artist={album.artist}
+                    image={coverUrl(album.releaseGroupId, 1200)}
+                    href={`https://musicbrainz.org/release-group/${album.releaseGroupId}`}
+                />
+                </>
+            );
+            })}
+      </div>
+    </section>
+    <section class="collection-section" aria-labelledby="collection-title">
+      <h2 id="collection-title">Record collection</h2>
+      <p class="section-description">The records on my shelf currently.</p>
+      <div class="album-grid">
+        {collection.map((record, index) => {
+            const dialogId = `record-${record.instanceId}`;
+            return (
+                <>
+                <AlbumCard
+                    title={record.title}
+                    artist={record.artist}
+                    image={record.image}
+                    dialogId={dialogId}
+                />
+                <AlbumDialog id={dialogId} {...record}
+                    previousId={index > 0 ? `record-${collection[index - 1].instanceId}` : undefined}
+                    nextId={index < collection.length - 1 ? `record-${collection[index + 1].instanceId}` : undefined}
+                    position={index + 1}
+                    total={collection.length}
+                />
+                </>
+            );
+        })}
+      </div>  
+    </section>
+    <p class="credits">Favourite album artwork from <a href="https://coverartarchive.org/">Cover Art Archive</a>.
+      Favourite album metadata from <a href="https://musicbrainz.org/">MusicBrainz</a>.
+      Collection data and images from <a href="https://www.discogs.com/">Discogs</a>.</p>
 
 </Layout>
 
+<style>
+section {
+    margin-block: 2rem 3rem;
+}
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: 2rem 1.25rem;
+}
+a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+}
+a:hover {
+    color: var(--color-accent);
+}
+.credits {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+.favourites-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 48rem) {
+  .favourites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+section.collection-section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.collection-section h2 {
+  margin-bottom: 0.5rem;
+}
+
+.section-description {
+  margin: 0 0 2rem;
+  color: var(--color-muted);
+}
+</style>

@@ -1,0 +1,123 @@
+---
+interface Props {
+  title: string;
+  spotifyTrackId?: string;
+  soundcloudUrl?: string;
+}
+const { title, spotifyTrackId, soundcloudUrl } = Astro.props;
+const spotifySrc = spotifyTrackId
+  ? `https://open.spotify.com/embed/track/${encodeURIComponent(spotifyTrackId)}?theme=0`
+  : undefined;
+const soundcloudSrc = soundcloudUrl
+  ? `https://w.soundcloud.com/player/?${new URLSearchParams({ url: soundcloudUrl, auto_play: 'false', color: '#9ec5ff', visual: 'false' })}`
+  : undefined;
+---
+
+{(spotifySrc || soundcloudSrc) && (
+  <album-player>
+    <p class="label">Listen</p>
+    {spotifySrc && soundcloudSrc && (
+      <div class="providers" aria-label="Music service">
+        <button type="button" data-provider="spotify" aria-pressed="true">Spotify</button>
+        <button type="button" data-provider="soundcloud" aria-pressed="false">SoundCloud</button>
+      </div>
+    )}
+    <div data-player-slot></div>
+    {spotifySrc && <template data-provider="spotify">
+      <iframe src={spotifySrc} title={`Spotify preview for ${title}`} width="100%" height="152"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    </template>}
+    {soundcloudSrc && <template data-provider="soundcloud">
+      <iframe src={soundcloudSrc} title={`SoundCloud preview for ${title}`} width="100%" height="152" allow="autoplay"></iframe>
+    </template>}
+  </album-player>
+)}
+
+<style>
+  album-player {
+    display: block;
+    margin-top: 1.5rem;
+  }
+  .label {
+    margin: 0 0 0.5rem;
+    color: #acbdd6;
+    font-size: 0.875rem;
+  }
+  .providers {
+    display: flex; 
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  button {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgb(158 197 255 / 35%);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #dceaff;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  button:hover, button[aria-pressed='true'] {
+    background: rgb(158 197 255 / 16%);
+    border-color: #9ec5ff;
+  }
+  button:focus-visible {
+    outline: 2px solid #9ec5ff;
+    outline-offset: 3px;
+  }
+  iframe {
+    display: block;
+    border: 0;
+    border-radius: 1rem;
+    }
+</style>
+
+<script>
+
+
+  class AlbumPlayer extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller = new AbortController();
+      const options = { signal: this.controller.signal };
+      const dialog = this.closest('dialog');
+      if (!dialog) return;
+
+      dialog.addEventListener('album:open', () => this.load(), options);
+      dialog.addEventListener('album:close', () => this.clear(), options);
+      dialog.addEventListener('close', () => { if (!dialog.open) this.clear(); }, options);
+      document.addEventListener('astro:before-swap', () => this.clear(), options);
+      this.addEventListener('click', event => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest<HTMLButtonElement>('button[data-provider]');
+        if (button && dialog.open && button.getAttribute('aria-pressed') !== 'true') {
+          this.load(button.dataset.provider);
+        }
+      }, options);
+      if (dialog.open) this.load();
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.clear();
+    }
+
+    private load(provider?: string) {
+      const templates = Array.from(this.querySelectorAll<HTMLTemplateElement>('template[data-provider]'));
+      const template = provider ? templates.find(item => item.dataset.provider === provider) : templates[0];
+      if (!template) return;
+      this.querySelector('[data-player-slot]')?.replaceChildren(template.content.cloneNode(true));
+      this.querySelectorAll<HTMLButtonElement>('button[data-provider]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.provider === template.dataset.provider));
+      });
+    }
+
+    private clear() {
+      this.querySelector('[data-player-slot]')?.replaceChildren();
+    }
+  }
+  if (!customElements.get('album-player')) customElements.define('album-player', AlbumPlayer);
+</script>
