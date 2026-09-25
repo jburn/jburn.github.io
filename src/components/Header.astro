@@ -57,10 +57,16 @@ import ThemeToggle from "./ThemeToggle.astro";
       z-index: -1;
       pointer-events: none;
 
-      background: linear-gradient(
+      background-color: var(--color-background);
+      background-image: var(--page-background-gradient);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      mask-image: linear-gradient(
         to bottom,
-        var(--color-background) 0,
-        var(--color-background) calc(100% - 2rem),
+        black 0,
+        black 45%,
+        rgb(0 0 0 / 75%) 65%,
+        rgb(0 0 0 / 25%) 85%,
         transparent 100%
       );
     }
