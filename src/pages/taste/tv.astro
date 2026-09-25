@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import MediaCredits from '../../components/MediaCredits.astro';
+import { previewTvIds } from '../../data/tv';
+import { getTmdbMedia } from '../../lib/tmdb';
+const series = await getTmdbMedia('tv', previewTvIds, 'backdrop');
+---
+<Layout title="TV series">
+  <PageHeading title="TV series" backHref="/taste/" backLabel="Taste" />
+  <MediaGrid items={series} aspectRatio="16 / 9" landscape />
+  <MediaCredits source="tmdb" />
+</Layout>

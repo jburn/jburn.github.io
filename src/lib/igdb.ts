@@ -7,7 +7,7 @@ interface Game {
   };
 }
 
-export async function getGameCovers(slugs: string[]): Promise<string[]> {
+export async function getGames(slugs: string[]): Promise<Array<{ title: string; image: string }>> {
   if (slugs.length === 0) return [];
 
   const clientId = import.meta.env.IGDB_CLIENT_ID;
@@ -64,13 +64,20 @@ export async function getGameCovers(slugs: string[]): Promise<string[]> {
   return slugs.flatMap(slug => {
     const game = games.find(game => game.slug === slug);
 
-    if (!game?.cover?.image_id) {
+    if (!game) {
       console.warn(`No IGDB cover found for: ${slug}`);
       return [];
     }
 
     return [
-      `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`,
+      {
+        title: game.name,
+        image: game.cover?.image_id ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg` : '',
+      },
     ];
   });
+}
+
+export async function getGameCovers(slugs: string[]): Promise<string[]> {
+  return (await getGames(slugs)).map(game => game.image).filter(Boolean);
 }

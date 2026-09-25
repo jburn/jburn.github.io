@@ -16,6 +16,8 @@ const {
   aspectRatio = '1 / 1',
   imageWidth = '7rem',
 } = Astro.props;
+const [ratioWidth, ratioHeight = 1] = aspectRatio.split('/').map(Number);
+const heightMultiplier = ratioHeight / ratioWidth;
 ---
 
 <a class="taste-preview" href={href}>
@@ -25,6 +27,7 @@ const {
   <div class="images" style={{
         '--image-ratio': aspectRatio,
         '--image-width': imageWidth,
+        '--image-height-multiplier': heightMultiplier,
     }}>
         {images.map(image => (
             <img src={image} alt="" loading="lazy" />
@@ -37,6 +40,8 @@ const {
 
 <style>
     .taste-preview {
+        container-type: inline-size;
+        min-width: 0;
         display: flex;
         flex-direction: column;
         color: var(--color-text);
@@ -78,13 +83,22 @@ const {
     }
 
     .images {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--image-width)), var(--image-width)));
+        grid-template-rows: calc(min(var(--image-width), 100cqi) * var(--image-height-multiplier));
+        grid-auto-rows: 0;
+        column-gap: 0.75rem;
+        row-gap: 0;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .images img {
-        width: var(--image-width);
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        max-height: 100%;
         max-width: 100%;
         aspect-ratio: var(--image-ratio);
         object-fit: cover;
@@ -106,13 +120,6 @@ const {
     .taste-preview:focus-visible {
         outline: 2px solid var(--color-accent);
         outline-offset: 6px;
-    }
-
-    @media (max-width: 48rem) {
-        .taste-preview {
-            flex-direction: column;
-            align-items: stretch;
-        }
     }
 
     @media (prefers-reduced-motion: reduce) {

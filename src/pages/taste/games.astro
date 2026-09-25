@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import MediaCredits from '../../components/MediaCredits.astro';
+import { previewGameSlugs } from '../../data/games';
+import { getGames } from '../../lib/igdb';
+const games = await getGames(previewGameSlugs);
+---
+<Layout title="Video games">
+  <PageHeading title="Video games" backHref="/taste/" backLabel="Taste" />
+  <MediaGrid items={games} aspectRatio="264 / 374" />
+  <MediaCredits source="igdb" />
+</Layout>

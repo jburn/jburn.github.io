@@ -18,8 +18,9 @@ body {
 }
 
 main {
-    flex: 1;
-    padding: 2rem;
+  flex: 1;
+  padding-block: clamp(1rem, 3vw, 2rem);
+  padding-inline: clamp(0rem, calc(5vw - 1.5rem), 2rem);
 }
 
 header,
@@ -30,11 +31,6 @@ footer {
   margin-inline: auto;
 }
 
-@media (max-width: 600px) {
-  main {
-    padding: 1rem 0;
-  }
-}
 
 button,
 input,

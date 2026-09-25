@@ -1,15 +1,17 @@
 type MediaType = 'movie' | 'tv';
 
 interface TmdbDetails {
+  title?: string;
+  name?: string;
   poster_path: string | null;
   backdrop_path: string | null;
 }
 
-export async function getPosters(
+export async function getTmdbMedia(
   type: MediaType,
   ids: number[],
   imageType: 'poster' | 'backdrop' = 'poster',
-): Promise<string[]> {
+): Promise<Array<{ title: string; image: string }>> {
   if (ids.length === 0) return [];
 
   const token = import.meta.env.TMDB_READ_ACCESS_TOKEN;
@@ -18,7 +20,7 @@ export async function getPosters(
     throw new Error('Missing TMDB_READ_ACCESS_TOKEN.');
   }
 
-  const posters: string[] = [];
+  const posters: Array<{ title: string; image: string }> = [];
 
   for (const id of ids) {
     const response = await fetch(
@@ -40,23 +42,22 @@ export async function getPosters(
 
     const details: TmdbDetails = await response.json();
 
-    if (!details.poster_path) {
-      console.warn(`No TMDB poster found for ${type}/${id}`);
-      continue;
-    }
     const path = imageType === 'backdrop'
         ? details.backdrop_path
         : details.poster_path;
 
-    if (!path) {
-        console.warn(`No ${imageType} found for ${type}/${id}`);
-        continue;
-    }
 
     const size = imageType === 'backdrop' ? 'w780' : 'w342';
 
-    posters.push(`https://image.tmdb.org/t/p/${size}${path}`);
+    posters.push({
+      title: details.title ?? details.name ?? 'Untitled',
+      image: path ? `https://image.tmdb.org/t/p/${size}${path}` : '',
+    });
   }
 
   return posters;
+}
+
+export async function getPosters(type: MediaType, ids: number[], imageType: 'poster' | 'backdrop' = 'poster'): Promise<string[]> {
+  return (await getTmdbMedia(type, ids, imageType)).map(item => item.image).filter(Boolean);
 }

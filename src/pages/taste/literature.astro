@@ -1,0 +1,13 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import MediaCredits from '../../components/MediaCredits.astro';
+import { previewBooks, bookCoverUrl } from '../../data/books';
+const books = previewBooks.map(book => ({ title: book.title, image: bookCoverUrl(book.editionId) }));
+---
+<Layout title="Literature">
+  <PageHeading title="Literature" backHref="/taste/" backLabel="Taste" />
+  <MediaGrid items={books} />
+  <MediaCredits source="openlibrary" />
+</Layout>
