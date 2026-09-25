@@ -1,0 +1,163 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TastePreview from '../../components/TastePreview.astro';
+import { previewAlbums, coverUrl } from '../../data/music';
+
+import { previewGameSlugs } from '../../data/games';
+import { getGameCovers } from '../../lib/igdb';
+
+import { previewFilmIds } from '../../data/film';
+import { previewTvIds } from '../../data/tv';
+import { getPosters } from '../../lib/tmdb';
+
+import { previewBooks, bookCoverUrl } from '../../data/books';
+
+const [gameCovers, filmPosters, tvBackdrops] = await Promise.all([
+  getGameCovers(previewGameSlugs),
+  getPosters('movie', previewFilmIds),
+  getPosters('tv', previewTvIds, 'backdrop'),
+]);
+---
+
+<Layout title="Taste">
+  <h1>Taste</h1>
+  <div class="taste-entry" style="--delay: 0ms">
+    <TastePreview
+      href="/taste/music/"
+      title="Music"
+      summary="Favourite albums & record collection."
+      images={previewAlbums.map(album => coverUrl(album.releaseGroupId))}
+      aspectRatio='1 / 1'
+    />
+  </div>
+  <hr style="--delay: 100ms"/>
+  <div class="taste-entry" style="--delay: 200ms">
+    <TastePreview
+      href="/taste/games/"
+      title="Video games"
+      summary="Favourite video games."
+      images={gameCovers}
+      aspectRatio="264 / 374"
+    />
+  </div>
+  <hr style="--delay: 300ms"/>
+  <div class="taste-entry" style="--delay: 400ms">
+    <TastePreview
+      href="/taste/tv/"
+      title="TV Series"
+      summary="Favourite TV series."
+      images={tvBackdrops}
+      aspectRatio="3 / 2"
+      imageWidth='12rem'
+    />
+  </div>
+  <hr style="--delay: 500ms"/>
+  <div class="taste-entry" style="--delay: 600ms">
+    <TastePreview
+      href="/taste/film/"
+      title="Film"
+      summary="Favourite films."
+      images={filmPosters}
+      aspectRatio="2 / 3"
+    />
+  </div>
+  <hr style="--delay: 700ms"/>
+  <div class="taste-entry" style="--delay: 800ms">
+    <TastePreview
+      href="/taste/literature/"
+      title="Literature"
+      summary="Favourite books."
+      images={previewBooks.map(book => bookCoverUrl(book.editionId))}
+      aspectRatio="2 / 3"
+    />
+  </div>
+  <section class="cover-credits" aria-labelledby="cover-credits-title">
+    <h2 id="cover-credits-title">Cover credits</h2>
+    <p>
+      Album artwork from <a href="https://coverartarchive.org/">Cover Art Archive</a>.
+      Game covers from <a href="https://www.igdb.com/">IGDB</a>.
+      Film and TV images from <a href="https://www.themoviedb.org/">TMDB</a>.
+      Book covers from <a href="https://openlibrary.org/">Open Library</a>.
+    </p>
+    <a class="tmdb-credit" href="https://www.themoviedb.org/">
+      <img src="/assets/tmdb-logo.svg" alt="TMDB" width="100" loading="lazy" />
+    </a>
+    <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  </section>
+</Layout>
+
+<style>
+  .cover-credits {
+    margin: 3rem 1rem 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .cover-credits h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .cover-credits p {
+    margin: 0.5rem 0;
+  }
+
+  .tmdb-credit {
+    display: inline-block;
+    margin-top: 0.75rem;
+  }
+
+  .tmdb-credit img {
+    display: block;
+    width: 6.25rem;
+    height: auto;
+  }
+
+  .cover-credits a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .cover-credits a:hover {
+    color: var(--color-accent);
+  }
+
+  .cover-credits a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  hr {
+    width: calc(90%);
+    margin: 0 auto;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .taste-entry {
+    animation: reveal-project 600ms ease-out both;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes reveal-project {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-entry {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,164 @@
+---
+
+
+---
+
+<button
+    type="button"
+    id="theme-toggle"
+    aria-label="Switch color theme"
+    >
+    <span aria-hidden="true"></span>
+</button>
+
+<style>
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border-radius: 50%;
+        border: none;
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        cursor: pointer;
+        transition: color 250ms ease;
+    }
+
+    span {
+        width: 2rem;
+        height: 2rem;
+        background: currentColor;
+        mask: var(--theme-icon, url('/assets/dark.svg'))
+            center / contain no-repeat;
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--toggle-background);
+        transform: scale(0);
+        transition: transform 300ms ease;
+        z-index: -1;
+    }
+
+    button:hover::before,
+    button:focus-visible::before {
+        transform: scale(1);
+    }
+
+    button:focus-visible,
+    button:hover {
+        color: var(--toggle-color);
+    }
+
+    button:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        button,
+        button::before {
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
+        if (!button) return;
+
+        const root = document.documentElement;
+
+        const updateButton = () => {
+            const isDark = root.dataset.theme === 'dark';
+            const label = isDark
+                ? 'Switch to light mode'
+                : 'Switch to dark mode';
+
+            button.style.setProperty(
+                '--theme-icon',
+                `url('/assets/${isDark ? 'light' : 'dark'}.svg')`
+            );
+
+            button.setAttribute('aria-label', label);
+            button.title = label;
+            
+            button.setAttribute(
+                'aria-pressed',
+                String(root.dataset.theme === 'dark')
+            );
+        }
+
+        updateButton();
+
+        button.addEventListener('click', async () => {
+            if (root.classList.contains('theme-changing')) return;
+
+            const applyTheme = () => {
+                const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                root.dataset.theme = theme;
+
+                try {
+                localStorage.setItem('theme', theme);
+                } catch {}
+
+                updateButton();
+            };
+
+            // do instant switch if reduced motion is preferred
+            if (
+                !document.startViewTransition ||
+                matchMedia('(prefers-reduced-motion: reduce)').matches
+            ) {
+                applyTheme();
+                return;
+            }
+
+            const bounds = button.getBoundingClientRect();
+            const x = bounds.left + bounds.width / 2;
+            const y = bounds.top + bounds.height / 2;
+
+            const radius = Math.hypot(
+                Math.max(x, innerWidth - x),
+                Math.max(y, innerHeight - y)
+            );
+
+            root.classList.add('theme-changing');
+
+            const transition = document.startViewTransition(applyTheme);
+
+            try {
+                await transition.ready;
+
+                await root.animate(
+                {
+                    clipPath: [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${radius}px at ${x}px ${y}px)`,
+                    ],
+                },
+                {
+                    duration: 600,
+                    easing: 'ease-in-out',
+                    pseudoElement: '::view-transition-new(root)',
+                }
+                ).finished;
+            } catch {
+                // The theme still changes if the animation is skipped.
+            } finally {
+                await transition.finished.catch(() => {});
+                root.classList.remove('theme-changing');
+            }
+            });
+    });
+</script>

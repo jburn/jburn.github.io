@@ -1,0 +1,125 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import PageHeading from '../../components/PageHeading.astro';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+
+  return projects.map(project => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<Layout title={project.data.title}>
+  <article>
+    <PageHeading title={project.data.title} backHref="/projects/" backLabel="Projects" />
+    <p>{project.data.summary}</p>
+    <ul class="technologies">
+        {project.data.technologies.map(technology => (
+            <li>{technology}</li>
+        ))}
+    </ul>
+
+    <Content />
+
+    {project.data.github && (
+        <a class="github-button" href={project.data.github}>
+            View on GitHub <span aria-hidden="true">↗</span>
+        </a>
+    )}
+  </article>
+</Layout>
+
+<style>
+article :global(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+article :global(pre) {
+  padding: 1rem 1.25rem;
+  margin-block: 1.5rem;
+  margin-inline-end: 4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  max-width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+article :global(pre code) {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+article :global(:not(pre) > code) {
+  padding: 0.15em 0.35em;
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 1rem 0 2rem;
+  list-style: none;
+}
+
+.technologies li {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.github-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.github-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.github-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .github-button {
+    transition: none;
+  }
+}
+</style>

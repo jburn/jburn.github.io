@@ -1,0 +1,76 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+const pageTitle = title ? `${title} | Juho Bruun` : 'Juho Bruun';
+const animation = {
+  old: {
+    name: 'content-out',
+    duration: '100ms',
+    easing: 'ease-out',
+    fillMode: 'both' as const,
+  },
+  new: {
+    name: 'content-in',
+    duration: '400ms',
+    easing: 'ease-out',
+    fillMode: 'both' as const,
+  },
+}
+
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <ClientRouter />
+    <script is:inline data-astro-rerun>
+      {
+        let theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+        
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+          }
+        } catch {}
+
+        document.documentElement.dataset.theme = theme;
+      }
+    </script>
+  </head>
+  <body transition:animate="none">
+    <Header />
+
+    <main
+      transition:name="page-content"
+      transition:animate={{
+        forwards: animation,
+        backwards: animation,
+      }}
+    >
+        <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<script>
+  document.addEventListener('astro:before-swap', event => {
+    event.newDocument.documentElement.dataset.theme =
+      document.documentElement.dataset.theme ?? 'light';
+  });
+</script>

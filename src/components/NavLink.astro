@@ -1,0 +1,88 @@
+---
+interface Props {
+    href: string;
+    label: string;
+}
+
+const { href, label } = Astro.props;
+
+const normalize = (path: string) => path.replace(/\/+$/, '') || '/';
+const currentPath = normalize(Astro.url.pathname);
+const targetPath = normalize(href);
+
+const isActive =
+  currentPath === targetPath ||
+  (targetPath !== '/' && currentPath.startsWith(`${targetPath}/`));
+---
+
+<a
+    href={href}
+    aria-current={isActive ? 'page' : undefined}
+    onclick={currentPath === targetPath ? 'event.preventDefault()' : undefined}
+    >
+    <span>{label}</span>
+</a>
+
+<style>
+    a {
+        color: var(--color-muted);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        position: relative;
+
+        text-decoration: none;
+        font-size: 1.25rem;
+        font-weight: 500;
+        transition: color 200ms ease;
+    }
+
+    span {
+        display: inline-block;
+        position: relative;
+    }
+
+    span::after {
+        content: '';
+        position: absolute;
+        bottom: -0.5rem;
+        left: 15%;
+        right: 15%;
+        height: 2px;
+        border-radius: 999px;
+        background: var(--color-accent);
+        transform: scaleX(0);
+        transition: transform 250ms ease;
+    }
+
+    a:hover,
+    a:focus-visible,
+    a[aria-current='page'] {
+        color: var(--color-accent);
+        font-weight: 700;
+    }
+
+    a:hover span::after,
+    a:focus-visible span::after,
+    a[aria-current='page'] span::after {
+        transform: scaleX(1);
+    }
+
+    
+    @keyframes reveal-underline {
+        from {
+            transform: scaleX(0);
+        }
+
+        to {
+            transform: scaleX(1);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        a,
+        span::after {
+            animation: none;
+            transition: none;
+        }
+    }
+</style>

@@ -1,0 +1,277 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHeading from "../../components/PageHeading.astro";
+import AlbumCard from '../../components/AlbumCard.astro';
+import AlbumDialog from "../../components/AlbumDialog.astro";
+import { favouriteAlbums, coverUrl } from '../../data/music';
+import { getDiscogsCollection } from '../../lib/discogs';
+import { getAlbumMetadata } from '../../lib/musicbrainz';
+
+const username = import.meta.env.DISCOGS_USERNAME?.trim();
+const [collection, favourites] = await Promise.all([
+  username ? getDiscogsCollection(username) : Promise.resolve([]),
+  Promise.all(favouriteAlbums.map(async album => ({
+    ...album,
+    ...await getAlbumMetadata(album.releaseGroupId),
+  }))),
+]);
+---
+
+<Layout title="Music">
+    <PageHeading title="Music" backHref="/taste/" backLabel="Taste" />
+    <section aria-labelledby="favourites-title">
+      <h2 id="favourites-title">All-time favourite albums</h2>
+      <div class="album-grid favourites-grid">
+        {favourites.map((album, index) => {
+            const dialogId = `favourite-${index}`;
+            const image = coverUrl(album.releaseGroupId);
+
+            return (
+                <>
+                <AlbumCard
+                    title={album.title}
+                    artist={album.artist}
+                    image={image}
+                    dialogId={dialogId}
+                />
+                <AlbumDialog
+                    id={dialogId}
+                    previousId={index > 0 ? `favourite-${index - 1}` : undefined}
+                    nextId={index < favourites.length - 1 ? `favourite-${index + 1}` : undefined}
+                    position={index + 1}
+                    total={favourites.length}
+                    spotifyTrackId={album.spotifyTrackId}
+                    note={album.note}
+                    soundcloudUrl={album.soundcloudUrl}
+                    year={album.year}
+                    genres={album.genres}
+                    title={album.title}
+                    artist={album.artist}
+                    image={coverUrl(album.releaseGroupId, 1200)}
+                    href={`https://musicbrainz.org/release-group/${album.releaseGroupId}`}
+                />
+                </>
+            );
+            })}
+      </div>
+    </section>
+    <section class="collection-section" aria-labelledby="collection-title">
+      <div class="collection-heading-container">
+        <div class="collection-heading">
+        <h2 id="collection-title">Record collection</h2>
+        <p class="section-description">The records on my shelf currently.</p>
+      </div>
+      <div class="collection-sort" id="collection-sort">
+        <button type="button" data-sort-field="artist" aria-controls="record-collection" aria-label="Sorting by artist. Switch to album">Artist</button>
+        <button type="button" data-sort-direction="asc" aria-controls="record-collection" aria-label="Ascending order. Switch to descending">
+          <svg class="sort-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5m-6 6 6-6 6 6" />
+          </svg>
+        </button>
+      </div>
+      </div>
+      
+      <div class="album-grid" id="record-collection">
+        {collection.map((record, index) => {
+            const dialogId = `record-${record.instanceId}`;
+            return (
+                <div class="record-entry" data-artist={record.artist} data-title={record.title} data-dialog-id={dialogId}>
+                <AlbumCard
+                    title={record.title}
+                    artist={record.artist}
+                    image={record.image}
+                    dialogId={dialogId}
+                />
+                <AlbumDialog id={dialogId} {...record}
+                    previousId={index > 0 ? `record-${collection[index - 1].instanceId}` : undefined}
+                    nextId={index < collection.length - 1 ? `record-${collection[index + 1].instanceId}` : undefined}
+                    position={index + 1}
+                    total={collection.length}
+                />
+                </div>
+            );
+        })}
+      </div>  
+    </section>
+    <p class="credits">Favourite album artwork from <a href="https://coverartarchive.org/">Cover Art Archive</a>.
+      Favourite album metadata from <a href="https://musicbrainz.org/">MusicBrainz</a>.
+      Collection data and images from <a href="https://www.discogs.com/">Discogs</a>.</p>
+
+</Layout>
+
+<style>
+.record-entry {
+  min-width: 0;
+}
+
+.collection-sort {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-left: auto;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.collection-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.collection-heading h2 {
+  margin: 0;
+}
+
+.collection-heading-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.collection-sort button {
+  min-width: 5.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.collection-sort button:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--thumbnail-shadow);
+}
+
+.collection-sort button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.collection-sort button[data-sort-direction] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  width: 2.75rem;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.sort-arrow {
+  transform: rotate(180deg);
+  transition: transform 250ms ease;
+}
+
+[data-sort-direction='desc'] .sort-arrow {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-sort button { transition: none; }
+  .sort-arrow { transition: none; }
+}
+
+section {
+    margin-block: 2rem 3rem;
+}
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: 2rem 1.25rem;
+}
+a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+}
+a:hover {
+    color: var(--color-accent);
+}
+.credits {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+.favourites-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 48rem) {
+  .favourites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+section.collection-section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+
+.section-description {
+  margin: 0 0 2rem;
+  color: var(--color-muted);
+}
+</style>
+
+<script>
+  const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+  function sortCollection() {
+    const controls = document.querySelector<HTMLElement>('#collection-sort');
+    const grid = document.querySelector<HTMLElement>('#record-collection');
+    if (!controls || !grid) return;
+
+    const field = controls.querySelector<HTMLButtonElement>('[data-sort-field]')?.dataset.sortField === 'title' ? 'title' : 'artist';
+    const secondary = field === 'artist' ? 'title' : 'artist';
+    const direction = controls.querySelector<HTMLButtonElement>('[data-sort-direction]')?.dataset.sortDirection === 'desc' ? -1 : 1;
+    const entries = Array.from(grid.querySelectorAll<HTMLElement>(':scope > .record-entry'));
+    entries.sort((a, b) =>
+      direction * collator.compare(a.dataset[field] ?? '', b.dataset[field] ?? '') ||
+      collator.compare(a.dataset[secondary] ?? '', b.dataset[secondary] ?? '') ||
+      collator.compare(a.dataset.dialogId ?? '', b.dataset.dialogId ?? ''),
+    );
+
+    entries.forEach((entry, index) => {
+      grid.append(entry);
+      const previous = entry.querySelector<HTMLButtonElement>('button[data-direction="previous"]');
+      const next = entry.querySelector<HTMLButtonElement>('button[data-direction="next"]');
+      for (const [button, neighbour] of [[previous, entries[index - 1]], [next, entries[index + 1]]] as const) {
+        if (!button) continue;
+        button.disabled = !neighbour;
+        if (neighbour) button.dataset.albumTarget = neighbour.dataset.dialogId;
+        else delete button.dataset.albumTarget;
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', sortCollection);
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLButtonElement>('#collection-sort button');
+    if (!button) return;
+
+    if (button.dataset.sortField) {
+      const artist = button.dataset.sortField !== 'artist';
+      button.dataset.sortField = artist ? 'artist' : 'title';
+      button.textContent = artist ? 'Artist' : 'Album';
+      button.setAttribute('aria-label', artist
+        ? 'Sorting by artist. Switch to album'
+        : 'Sorting by album. Switch to artist');
+    } else {
+      const ascending = button.dataset.sortDirection !== 'asc';
+      button.dataset.sortDirection = ascending ? 'asc' : 'desc';
+      button.setAttribute('aria-label', ascending
+        ? 'Ascending order. Switch to descending'
+        : 'Descending order. Switch to ascending');
+    }
+    sortCollection();
+  });
+</script>

@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import IconLink from '../components/IconLink.astro';
+import AsciiPortrait from '../components/AsciiPortrait.astro';
+---
+
+<Layout>
+  <div id="introduction">
+    <div>
+      <h1>Juho Bruun</h1>
+      <p class="subtitle">Software Engineer</p>
+      <p>
+        Welcome to my website.<br><br>I enjoy creating things: mostly software, sometimes graphics, and occasionally something harder to categorise. This site is where I collect what I’ve made, what I’m working on, and some of the things I’m into.
+      </p>
+    </div>
+    
+    <AsciiPortrait />
+  </div>
+
+  <hr/>
+  <h3>Contact me:</h3>
+  <nav>
+    <IconLink
+      href="https://www.linkedin.com/in/juhobruun/"
+      icon="/assets/linkedin.svg"
+      label="LinkedIn"
+      width="3.5rem"
+      />
+    <IconLink
+      href="mailto:juho.bruun@iki.fi"
+      icon="/assets/email.svg"
+      label="Email"
+      width="3.5rem"
+      />
+    <IconLink
+      href="https://github.com/jburn"
+      icon="/assets/github.svg"
+      label="GitHub"
+      width="3.5rem"
+      />
+  </nav>
+</Layout>
+
+<style>
+  nav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    color: var(--color-muted);
+  }
+
+  #introduction {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 2rem;
+    align-items: flex-start;
+  }
+  
+
+  @media (max-width: 600px) {
+  #introduction {
+    flex-direction: column;
+    padding: 0;
+    gap: 2rem;
+  }
+}
+</style>

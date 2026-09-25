@@ -1,0 +1,54 @@
+---
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a href={href} aria-label={`Back to ${label}`} title={`Back to ${label}`}>
+  <span aria-hidden="true"></span>
+</a>
+
+<style>
+  span {
+    width: 40px;
+    height: 40px;
+    background: currentColor;
+    mask: url('/assets/arrow-left.svg') center / contain no-repeat;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    color: var(--color-muted);
+
+    transition:
+      color 200ms ease,
+      background-color 200ms ease;
+  }
+
+  a:hover {
+    color: var(--color-accent);
+    background-color: var(--color-surface);
+
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    a {
+      transition: none;
+    }
+  }
+</style>

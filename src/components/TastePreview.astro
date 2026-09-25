@@ -1,0 +1,181 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  summary: string;
+  images: string[];
+  aspectRatio?: string;
+  imageWidth?: string;
+}
+
+const {
+  href,
+  title,
+  summary,
+  images,
+  aspectRatio = '1 / 1',
+  imageWidth = '7rem',
+} = Astro.props;
+const [ratioWidth, ratioHeight = 1] = aspectRatio.split('/').map(Number);
+const heightMultiplier = ratioHeight / ratioWidth;
+---
+
+<a class="taste-preview" href={href}>
+  <h2>{title}</h2>
+  <hr />
+
+  <div class="images" style={{
+        '--image-ratio': aspectRatio,
+        '--image-width': imageWidth,
+        '--image-height-multiplier': heightMultiplier,
+    }}>
+        {images.map(image => (
+            <img src={image} alt="" loading="lazy" />
+        ))}
+  </div>
+
+  <p>{summary}</p>
+  <p>Explore {title} →</p>
+</a>
+
+<style>
+    .taste-preview {
+        container-type: inline-size;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        color: var(--color-text);
+        text-decoration: none;
+        padding-block: 1rem;
+        padding-inline: 1rem;
+        border-radius: 1rem;
+        position: relative;
+        transition:
+            transform 250ms ease,
+            box-shadow 250ms ease,
+            background-color 250ms ease;
+    }
+
+    .taste-preview > hr {
+        width: 100%;
+        border: 0;
+        margin-bottom: 2rem;
+        margin-top: -1rem;
+        border-top: 2px solid var(--color-text);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .taste-preview:hover {
+            z-index: 1;
+            transform:
+            perspective(1000px)
+            rotateX(var(--tilt-x, 0deg))
+            rotateY(var(--tilt-y, 0deg))
+            scale(1.02);
+
+            background-color: var(--color-surface);
+            box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+        }
+    }
+
+    h2 {
+        transition: color 200ms ease;
+    }
+
+    .images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--image-width)), var(--image-width)));
+        grid-template-rows: calc(min(var(--image-width), 100cqi) * var(--image-height-multiplier));
+        grid-auto-rows: 0;
+        column-gap: 0.75rem;
+        row-gap: 0;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .images img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        max-height: 100%;
+        max-width: 100%;
+        aspect-ratio: var(--image-ratio);
+        object-fit: cover;
+        border-radius: 0.5rem;
+        border: 1px solid var(--color-border);
+        box-shadow: 3px 3px 8px rgb(0 0 0 / 15%);
+    }
+
+    .taste-preview:hover,
+    .taste-preview:focus-visible {
+        background-color: var(--color-surface);
+    }
+
+    .taste-preview:hover h2,
+    .taste-preview:focus-visible h2 {
+        color: var(--color-accent);
+    }
+
+    .taste-preview:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 6px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .taste-preview,
+        h2 {
+            transition: none;
+        }
+
+        .taste-preview:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const motionAllowed = matchMedia(
+      '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
+    );
+
+    document.querySelectorAll<HTMLElement>('.taste-preview')
+      .forEach(card => {
+        const wrapper = card.closest<HTMLElement>('.taste-entry');
+        if (!wrapper) return;
+
+        const reset = () => {
+          card.style.removeProperty('--tilt-x');
+          card.style.removeProperty('--tilt-y');
+        };
+
+        card.addEventListener('pointermove', event => {
+          if (!motionAllowed.matches || event.pointerType === 'touch') {
+            reset();
+            return;
+          }
+
+          const bounds = wrapper.getBoundingClientRect();
+
+          const x = Math.max(-1, Math.min(
+            1,
+            ((event.clientX - bounds.left) / bounds.width) * 2 - 1
+          ));
+
+          const y = Math.max(-1, Math.min(
+            1,
+            ((event.clientY - bounds.top) / bounds.height) * 2 - 1
+          ));
+
+          const strength = 2;
+
+          card.style.setProperty('--tilt-x', `${-y * strength}deg`);
+          card.style.setProperty('--tilt-y', `${x * strength}deg`);
+        });
+
+        card.addEventListener('pointerleave', reset);
+        card.addEventListener('pointercancel', reset);
+      });
+  });
+</script>

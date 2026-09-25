@@ -1,0 +1,141 @@
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/ManropeV5-Regular.woff2') format('woff2');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Manrope', sans-serif;
+    padding-inline: 1rem;
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+main {
+  flex: 1;
+  padding-block: clamp(1rem, 3vw, 2rem);
+  padding-inline: clamp(0rem, calc(5vw - 1.5rem), 2rem);
+}
+
+header,
+main,
+footer {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+}
+
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+body,
+header,
+footer,
+pre,
+a,
+button {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  header,
+  footer,
+  pre,
+  a,
+  button {
+    transition: none;
+  }
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Capture everything together, including Astro's named page content. */
+html.theme-changing * {
+  view-transition-name: none !important;
+}
+
+/* Avoid capturing partially transitioned theme colors. */
+html.theme-changing *,
+html.theme-changing *::before,
+html.theme-changing *::after {
+  transition: none !important;
+}
+
+html.theme-changing::view-transition-old(root),
+html.theme-changing::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-changing::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-changing::view-transition-new(root) {
+  z-index: 2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+  --color-background: #f3f6fb;
+  --color-surface: #ffffff;
+  --color-text: #12519e;
+  --color-muted: #526f93;
+  --color-accent: #244d83;
+  --color-border: #d3ddea;
+  --toggle-background: #0d1729;
+  --toggle-color: #edf3fc;
+  --color-link-hover: #2878d4;
+  --thumbnail-shadow: 3px 3px 8px rgb(0 0 0 / 15%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: #0d1729;
+  --color-surface: #14223a;
+  --color-text: #edf3fc;
+  --color-muted: #acbdd6;
+  --color-accent: #9ec5ff;
+  --color-border: #2b3d59;
+  --toggle-background: #f3f6fb;
+  --toggle-color: #12519e;
+  --thumbnail-shadow: 3px 3px 10px rgb(158 197 255 / 10%);
+}
+
+@keyframes content-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

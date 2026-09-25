@@ -1,0 +1,150 @@
+---
+interface Props {
+    href: string;
+    title: string;
+    summary: string;
+    image:string;
+}
+
+const { href, title, summary, image } = Astro.props;
+---
+
+
+<a class="preview-container" href={href}>
+    <img src={image}>
+    <div>
+        <h2>{title}</h2>
+        <p>{summary}</p>
+    </div>
+</a>
+
+<style>
+    .preview-container {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        align-items: center;
+        color: var(--color-text);
+        text-decoration: none;
+        padding-block: 2rem;
+        padding-inline: 1rem;
+        border-radius: 1rem;
+        position: relative;
+        transition:
+            transform 250ms ease,
+            box-shadow 250ms ease,
+            background-color 250ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .preview-container:hover {
+            z-index: 1;
+            transform:
+            perspective(1000px)
+            rotateX(var(--tilt-x, 0deg))
+            rotateY(var(--tilt-y, 0deg))
+            scale(1.02);
+
+            background-color: var(--color-surface);
+            box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+        }
+    }
+
+    h2 {
+        transition: color 200ms ease;
+    }
+
+    .preview-container:hover,
+    .preview-container:focus-visible {
+        background-color: var(--color-surface);
+    }
+
+    .preview-container:hover h2,
+    .preview-container:focus-visible h2 {
+        color: var(--color-accent);
+    }
+
+    .preview-container img {
+        width: 33%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        border-radius: 1rem;
+        border: 1px solid var(--color-border);
+    }
+
+    .preview-container:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 6px;
+    }
+
+    @media (max-width: 48rem) {
+        .preview-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .preview-container img {
+            width: 100%;
+            aspect-ratio: 2 / 1;
+            max-height: 10rem;
+            object-fit: cover;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .preview-container,
+        h2 {
+            transition: none;
+        }
+
+        .preview-container:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const motionAllowed = matchMedia(
+      '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
+    );
+
+    document.querySelectorAll<HTMLElement>('.preview-container')
+      .forEach(card => {
+        const wrapper = card.closest<HTMLElement>('.project-entry');
+        if (!wrapper) return;
+
+        const reset = () => {
+          card.style.removeProperty('--tilt-x');
+          card.style.removeProperty('--tilt-y');
+        };
+
+        card.addEventListener('pointermove', event => {
+          if (!motionAllowed.matches || event.pointerType === 'touch') {
+            reset();
+            return;
+          }
+
+          const bounds = wrapper.getBoundingClientRect();
+
+          const x = Math.max(-1, Math.min(
+            1,
+            ((event.clientX - bounds.left) / bounds.width) * 2 - 1
+          ));
+
+          const y = Math.max(-1, Math.min(
+            1,
+            ((event.clientY - bounds.top) / bounds.height) * 2 - 1
+          ));
+
+          const strength = 2;
+
+          card.style.setProperty('--tilt-x', `${-y * strength}deg`);
+          card.style.setProperty('--tilt-y', `${x * strength}deg`);
+        });
+
+        card.addEventListener('pointerleave', reset);
+        card.addEventListener('pointercancel', reset);
+      });
+  });
+</script>

@@ -1,0 +1,380 @@
+---
+import AlbumPlayer from './AlbumPlayer.astro';
+interface Props {
+    previousId?: string;
+    nextId?: string;
+    position?: number;
+    total?: number;
+    note?: string;
+    spotifyTrackId?: string;
+    soundcloudUrl?: string;
+    id: string;
+    title: string;
+    artist: string;
+    image: string;
+    href: string;
+    year?: number;
+    format?: string;
+    genres?: string[];
+    styles?: string[];
+}
+
+const {
+  previousId,
+  nextId,
+  position,
+  total,
+  note,
+  spotifyTrackId,
+  soundcloudUrl,
+  id,
+  title,
+  artist,
+  image,
+  href,
+  year,
+  format,
+  genres = [],
+  styles = [],
+} = Astro.props;
+---
+
+<dialog id={id} data-album-view aria-labelledby={`${id}-title`}>
+  <div class="dialog-content">
+    <form method="dialog" class="close">
+      <button type="submit" aria-label="Close album details" autofocus>
+        ×
+      </button>
+    </form>
+
+    <div class="cover">
+      {image
+        ? <img src={image} alt={`Cover of ${title}`} loading="lazy" />
+        : <span>No cover available</span>}
+    </div>
+
+    <div class="details">
+      <h2 id={`${id}-title`}>{title}</h2>
+      <p class="artist">{artist}</p>
+
+      {note?.trim() && <p class="album-note">{note.trim()}</p>}
+
+      <dl>
+        {Boolean(year) && <><dt>Year</dt><dd>{year}</dd></>}
+        {format && <><dt>Format</dt><dd>{format}</dd></>}
+        {genres.length > 0 && (
+          <><dt>Genre</dt><dd>{genres.join(', ')}</dd></>
+        )}
+        {styles.length > 0 && (
+          <><dt>Styles</dt><dd>{styles.join(', ')}</dd></>
+        )}
+      </dl>
+
+      <AlbumPlayer title={title} spotifyTrackId={spotifyTrackId} soundcloudUrl={soundcloudUrl} />
+
+      <a class="release-link" href={href} >View release ↗</a>
+    </div>
+    {total && position && <nav class="album-navigation" aria-label="Browse albums">
+      <button type="button" data-album-target={previousId} data-direction="previous" disabled={!previousId} aria-label="Previous album">&lt;</button>
+      <button type="button" data-album-target={nextId} data-direction="next" disabled={!nextId} aria-label="Next album">&gt;</button>
+    </nav>}
+  </div>
+</dialog>
+
+<style>
+  .album-navigation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .album-navigation button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #dceaff;
+    font: inherit;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .album-navigation [data-direction='previous'] { left: 0; }
+  .album-navigation [data-direction='next'] { right: 0; }
+
+  .album-navigation button:hover:not(:disabled) {
+    color: #ffffff;
+  }
+
+  .album-navigation button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .album-note {
+    margin: 1.5rem 0;
+    line-height: 1.65;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    font-style: italic;
+    color: #acbdd6;
+  }
+
+  dialog {
+    box-sizing: border-box;
+    width: min(68rem, calc(100vw - 2rem));
+    max-height: 90dvh;
+    padding: 0;
+    margin: auto;
+    overflow-y: auto;
+    color: #f3f6fb;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 88%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .dialog-content {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+    padding: 3rem 3rem 2rem;
+  }
+
+  .cover {
+    display: block;
+    width: 100%;
+    place-items: center;
+    aspect-ratio: 1;
+    background: var(--color-background);
+    overflow: hidden;
+    box-shadow: var(--thumbnail-shadow);
+  }
+
+  .cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .details {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  .artist {
+    margin: 0.5rem 0 1.5rem;
+    color: #acbdd6;
+  }
+
+  dl {
+    margin: 0 0 1.5rem;
+  }
+
+  dt {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #acbdd6;
+  }
+
+  dd {
+    margin: 0.2rem 0 0;
+  }
+
+  a {
+    color: #9ec5ff;
+    text-underline-offset: 0.2em;
+  }
+
+  .close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+  }
+
+  .close button {
+    width: 4rem;
+    height: 4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #f3f6fb;
+    font: inherit;
+    font-size: 3rem;
+    cursor: pointer;
+  }
+
+  .close button:hover {
+    background: rgb(255 255 255 / 10%);
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+.release-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(158 197 255 / 35%);
+  border-radius: 0.5rem;
+  background: rgb(158 197 255 / 8%);
+  color: #dceaff;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+.release-link:hover {
+  background: rgb(158 197 255 / 16%);
+  border-color: #9ec5ff;
+  transform: translateY(-2px);
+}
+
+.release-link:focus-visible {
+  outline: 2px solid #9ec5ff;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .release-link {
+    transition: none;
+  }
+
+  .release-link:hover {
+    transform: none;
+  }
+}
+
+  @media (max-width: 40rem) {
+    .dialog-content {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 3rem 2.75rem 1.25rem;
+    }
+
+    .cover {
+      width: 100%;
+      max-width: 20rem;
+      margin-inline: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    dialog[open] {
+      animation: appear 200ms ease-out;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+</style>
+
+<script>
+  let originalTrigger: HTMLButtonElement | undefined;
+
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+
+    const navigation = event.target.closest<HTMLButtonElement>('button[data-album-target]');
+    if (navigation && !navigation.disabled) {
+      const current = navigation.closest('dialog');
+      const next = document.getElementById(navigation.dataset.albumTarget ?? '');
+      if (!current?.open || !(next instanceof HTMLDialogElement) || next.open) return;
+
+      // Remove the old player immediately, before opening the next album.
+      current.dispatchEvent(new Event('album:close'));
+      current.close();
+      next.showModal();
+      next.dispatchEvent(new Event('album:open'));
+      const direction = navigation.dataset.direction;
+      const sameButton = next.querySelector<HTMLButtonElement>(`button[data-direction="${direction}"]`);
+      const focusTarget = sameButton && !sameButton.disabled
+        ? sameButton
+        : next.querySelector<HTMLButtonElement>('.album-navigation button:not(:disabled)');
+      focusTarget?.focus({ preventScroll: true });
+      return;
+    }
+
+    const trigger = event.target.closest<HTMLButtonElement>(
+      'button[data-album-dialog]',
+    );
+
+    if (!trigger) return;
+
+    const dialog = document.getElementById(
+      trigger.dataset.albumDialog ?? '',
+    );
+
+    if (dialog instanceof HTMLDialogElement && !dialog.open) {
+      originalTrigger = trigger;
+      dialog.showModal();
+      dialog.dispatchEvent(new Event('album:open'));
+    }
+  });
+
+  // Native close events don't bubble. Restore the grid focus after browsing.
+  document.addEventListener('close', event => {
+    if (!(event.target instanceof HTMLDialogElement) || !event.target.hasAttribute('data-album-view')) return;
+    if (!document.querySelector('dialog[data-album-view][open]')) {
+      originalTrigger?.focus({ preventScroll: true });
+      originalTrigger = undefined;
+    }
+  }, true);
+
+  document.addEventListener('astro:before-swap', () => {
+    originalTrigger = undefined;
+    document.querySelectorAll<HTMLDialogElement>('dialog[open]')
+        .forEach(dialog => dialog.close());
+    });
+
+    document.addEventListener('click', event => {
+    if (!(event.target instanceof HTMLDialogElement)) return;
+
+    const dialog = event.target;
+    const bounds = dialog.getBoundingClientRect();
+
+    const outside =
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom;
+
+    if (outside) dialog.close();
+  });
+</script>
