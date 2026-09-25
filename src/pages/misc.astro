@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MiscPreview from '../components/MiscPreview.astro';
+import { miscCreations } from '../data/misc';
+---
+
+<Layout title="Misc">
+  <h1>Misc</h1>
+  <p class="introduction">Other things I’ve made.</p>
+
+  <ul class="misc-list">
+    {miscCreations.map((creation, index) => (
+      <li>
+        <MiscPreview {...creation} reversed={index % 2 === 1} />
+      </li>
+    ))}
+  </ul>
+</Layout>
+
+<style>
+  .introduction {
+    max-width: 48ch;
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .misc-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    margin: 3rem 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .misc-list > li {
+    width: 100%;
+    max-width: 60rem;
+    min-width: 0;
+    margin-inline: auto;
+  }
+</style>

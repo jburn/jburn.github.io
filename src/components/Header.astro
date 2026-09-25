@@ -20,6 +20,7 @@ import ThemeToggle from "./ThemeToggle.astro";
         <NavLink href="/projects/" label="Projects" />
         <NavLink href="/taste/" label="Taste" />
         <NavLink href="/design/" label="Design" />
+        <NavLink href="/misc/" label="Misc" />
       </nav>
       <ThemeToggle />
       <button class="menu-toggle" type="button" aria-controls="header-navigation" aria-expanded="false" aria-label="Open navigation">
@@ -128,7 +129,8 @@ import ThemeToggle from "./ThemeToggle.astro";
       outline-offset: 3px;
     }
 
-    @media (max-width: 40rem) {
+    /* Leave room for all five links, the logo, and the theme control. */
+    @media (max-width: 50rem) {
       #header-actions {
         gap: 0.5rem;
       }
@@ -221,7 +223,7 @@ import ThemeToggle from "./ThemeToggle.astro";
         if (event.target instanceof Node && !this.contains(event.target)) close();
       }, options);
 
-      const compact = matchMedia('(max-width: 40rem)');
+      const compact = matchMedia('(max-width: 50rem)');
       compact.addEventListener('change', () => {
         const focusInNav = nav.contains(document.activeElement);
         close(compact.matches && focusInNav);

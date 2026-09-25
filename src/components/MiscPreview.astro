@@ -1,0 +1,157 @@
+---
+interface Props {
+  title: string;
+  summary: string;
+  image?: string;
+  alt?: string;
+  href?: string;
+  spotifyPlaylistId?: string;
+  reversed?: boolean;
+}
+
+const {
+  title,
+  summary,
+  image = '/assets/misc/placeholder.svg',
+  alt = '',
+  href,
+  spotifyPlaylistId,
+  reversed = false,
+} = Astro.props;
+const Tag = href && !spotifyPlaylistId ? 'a' : 'div';
+---
+
+<Tag class="misc-preview" href={Tag === 'a' ? href : undefined}>
+  <div class:list={['preview-layout', { reversed }]}>
+  <div class="media">
+  {spotifyPlaylistId ? (
+    <iframe
+      title={`${title} on Spotify`}
+      src={`https://open.spotify.com/embed/playlist/${encodeURIComponent(spotifyPlaylistId)}?theme=0`}
+      width="100%"
+      height="352"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
+  ) : (
+    <div class="thumbnail">
+      <img src={image} alt={alt} loading="lazy" />
+    </div>
+  )}
+  </div>
+  <div class="description">
+    <h2>{title}</h2>
+    <p>{summary}</p>
+  </div>
+  </div>
+</Tag>
+
+<style>
+  .misc-preview {
+    display: block;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .preview-layout {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: clamp(0.75rem, 4vw, 3rem);
+  }
+
+  .preview-layout.reversed {
+    flex-direction: row-reverse;
+  }
+
+  .media {
+    flex: 0 0 65%;
+    min-width: 0;
+  }
+
+  .description {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .reversed .description {
+    text-align: right;
+  }
+
+  .reversed .description p {
+    margin-left: auto;
+  }
+
+  .thumbnail {
+    position: relative;
+    aspect-ratio: 8 / 5;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    box-shadow: var(--thumbnail-shadow);
+  }
+
+  img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  iframe {
+    display: block;
+    border: 0;
+    border-radius: 0.75rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  p {
+    max-width: 48ch;
+    margin: 0;
+    color: var(--color-muted);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a h2,
+  h2 a {
+    transition: color 200ms ease;
+  }
+
+  a:hover h2,
+  a:focus-visible h2,
+  h2 a:hover,
+  h2 a:focus-visible {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 6px;
+    border-radius: 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    a h2,
+    h2 a {
+      transition: none;
+    }
+  }
+</style>
