@@ -13,10 +13,6 @@ body {
     flex-direction: column;
     font-family: 'Manrope', sans-serif;
     padding-inline: 1rem;
-    background-color: var(--color-background);
-    background-image: var(--page-background-gradient);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
     color: var(--color-text);
 }
 
@@ -66,7 +62,13 @@ button {
 }
 
 html {
+  overflow-y: scroll;
   scrollbar-gutter: stable;
+  scrollbar-color: var(--color-muted) transparent;
+  background-color: var(--color-background);
+  background-image: var(--page-background-gradient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* Capture everything together, including Astro's named page content. */
