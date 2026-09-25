@@ -1,0 +1,138 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { designSections } from '../data/designs';
+const sections = designSections.filter(section => section.items.length > 0);
+---
+
+<Layout title="Design">
+  {sections.length > 0 ? (
+    <div class="design-sections">
+      {sections.map(section => (
+        <section class="design-section">
+          <h2>{section.title}</h2>
+          {section.description && <p class="section-subtitle">{section.description}</p>}
+
+          <div class="design-grid">
+            {section.items.map(design => (
+              <figure>
+                <div class="design-image">
+                  <img
+                    src={design.image}
+                    alt={design.alt}
+                    loading="lazy"
+                  />
+                </div>
+
+                <figcaption>
+                  <div class="design-heading">
+                    <h3>{design.title}</h3>
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  ) : (
+    <p class="empty-state">Nothing here yet.</p>
+  )}
+</Layout>
+
+<style>
+  .design-grid {
+    columns: 3 12rem;
+    column-gap: 1.5rem;
+    margin-block: 2rem;
+  }
+
+  figure {
+    break-inside: avoid;
+    margin: 0 0 2rem;
+  }
+
+  .design-image {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .design-image img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 20rem;
+    border-radius: inherit;
+  }
+
+  .section-subtitle {
+    margin: 0.5rem 0 1.5rem;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: inherit;
+  }
+
+  figcaption {
+    margin-top: 1rem;
+  }
+
+  .design-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .design-heading h3 {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  figcaption p,
+  .design-heading span {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  span,
+  p {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+  }
+
+  .empty-state {
+    margin-block: 2rem;
+  }
+
+  .design-section + .design-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .design-grid.two-columns {
+    columns: 2 16rem;
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+
+  :global(html:not([data-theme='dark'])) .design-image img {
+    filter: drop-shadow(2px 3px 4px rgb(18 51 85 / 30%));
+  }
+</style>
