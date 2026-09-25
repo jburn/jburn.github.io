@@ -3,12 +3,17 @@ import Layout from '../../layouts/Layout.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import MediaGrid from '../../components/MediaGrid.astro';
 import MediaCredits from '../../components/MediaCredits.astro';
-import { previewGameSlugs } from '../../data/games';
+import { favouriteGameSlugs } from '../../data/games';
 import { getGames } from '../../lib/igdb';
-const games = await getGames(previewGameSlugs);
+const games = await getGames(favouriteGameSlugs);
+const items = games.map(game => ({
+  ...game,
+  subtitle: game.developers.join(', '),
+  details: [game.year, game.genres.join(', ')].filter(Boolean).join(' · '),
+}));
 ---
 <Layout title="Video games">
   <PageHeading title="Video games" backHref="/taste/" backLabel="Taste" />
-  <MediaGrid items={games} aspectRatio="264 / 374" />
+  <MediaGrid items={items} aspectRatio="264 / 374" />
   <MediaCredits source="igdb" />
 </Layout>

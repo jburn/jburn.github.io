@@ -3,9 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import MediaGrid from '../../components/MediaGrid.astro';
 import MediaCredits from '../../components/MediaCredits.astro';
-import { previewFilmIds } from '../../data/film';
+import { favouriteFilmIds } from '../../data/film';
 import { getTmdbMedia } from '../../lib/tmdb';
-const films = await getTmdbMedia('movie', previewFilmIds);
+const films = await getTmdbMedia('movie', favouriteFilmIds);
 ---
 <Layout title="Film">
   <PageHeading title="Film" backHref="/taste/" backLabel="Taste" />

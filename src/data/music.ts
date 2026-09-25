@@ -38,16 +38,6 @@ export const previewAlbums: Album[] = [
         artist: "Nick Drake",
         releaseGroupId: "740ec10a-e887-38a6-a04d-fe2069c9e2a7",
     },
-    {
-        title: "Third Eye Blind",
-        artist: "Third Eye Blind",
-        releaseGroupId: "2ccf437c-9b4e-35f5-98d6-812b08c8ac43",
-    },
-    {
-        title: "Группа крови",
-        artist: "Кино",
-        releaseGroupId: "7ff1eff0-a8c8-37dc-807e-eea5a9e173b5"
-    }
 ]
 
 export const favouriteAlbums: Album[] = [

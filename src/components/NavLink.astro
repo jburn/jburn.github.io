@@ -20,7 +20,7 @@ const isActive =
     aria-current={isActive ? 'page' : undefined}
     onclick={currentPath === targetPath ? 'event.preventDefault()' : undefined}
     >
-    {label}
+    <span>{label}</span>
 </a>
 
 <style>
@@ -36,10 +36,15 @@ const isActive =
         transition: color 200ms ease;
     }
 
-    a::after {
+    span {
+        display: inline-block;
+        position: relative;
+    }
+
+    span::after {
         content: '';
         position: absolute;
-        bottom: 0;
+        bottom: -0.5rem;
         left: 15%;
         right: 15%;
         height: 2px;
@@ -56,9 +61,9 @@ const isActive =
         font-weight: 700;
     }
 
-    a:hover::after,
-    a:focus-visible::after,
-    a[aria-current='page']::after {
+    a:hover span::after,
+    a:focus-visible span::after,
+    a[aria-current='page'] span::after {
         transform: scaleX(1);
     }
 
@@ -75,7 +80,7 @@ const isActive =
 
     @media (prefers-reduced-motion: reduce) {
         a,
-        a::after {
+        span::after {
             animation: none;
             transition: none;
         }

@@ -2,12 +2,26 @@ interface Game {
   id: number;
   name: string;
   slug: string;
+  first_release_date?: number;
+  genres?: Array<{ name: string }>;
+  involved_companies?: Array<{
+    developer: boolean;
+    company?: { name: string };
+  }>;
   cover?: {
     image_id: string;
   };
 }
 
-export async function getGames(slugs: string[]): Promise<Array<{ title: string; image: string }>> {
+export interface GameDetails {
+  title: string;
+  image: string;
+  developers: string[];
+  year?: number;
+  genres: string[];
+}
+
+export async function getGames(slugs: string[]): Promise<GameDetails[]> {
   if (slugs.length === 0) return [];
 
   const clientId = import.meta.env.IGDB_CLIENT_ID;
@@ -47,7 +61,8 @@ export async function getGames(slugs: string[]): Promise<Array<{ title: string; 
       Accept: 'application/json',
     },
     body: `
-      fields name, slug, cover.image_id;
+      fields name, slug, cover.image_id, first_release_date, genres.name,
+        involved_companies.developer, involved_companies.company.name;
       where slug = (${slugList});
       limit 50;
     `,
@@ -72,6 +87,13 @@ export async function getGames(slugs: string[]): Promise<Array<{ title: string; 
     return [
       {
         title: game.name,
+        developers: [...new Set((game.involved_companies ?? [])
+          .filter(company => company.developer && company.company?.name)
+          .map(company => company.company!.name))],
+        year: game.first_release_date === undefined
+          ? undefined
+          : new Date(game.first_release_date * 1000).getUTCFullYear(),
+        genres: (game.genres ?? []).map(genre => genre.name),
         image: game.cover?.image_id ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg` : '',
       },
     ];

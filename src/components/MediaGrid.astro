@@ -1,6 +1,11 @@
 ---
 interface Props {
-  items: Array<{ title: string; image: string }>;
+  items: Array<{
+    title: string;
+    image: string;
+    subtitle?: string;
+    details?: string;
+  }>;
   aspectRatio?: string;
   landscape?: boolean;
 }
@@ -14,6 +19,8 @@ const { items, aspectRatio = '2 / 3', landscape = false } = Astro.props;
         {item.image ? <img src={item.image} alt="" loading="lazy" /> : <span>No cover available</span>}
       </div>
       <h2>{item.title}</h2>
+      {item.subtitle && <p class="subtitle">{item.subtitle}</p>}
+      {item.details && <p class="details">{item.details}</p>}
     </li>
   ))}
 </ul>
@@ -56,7 +63,23 @@ const { items, aspectRatio = '2 / 3', landscape = false } = Astro.props;
     line-height: 1.5;
     overflow-wrap: anywhere;
   }
+  .subtitle {
+    margin: 0.25rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
   @media (max-width: 30rem) {
-    .media-grid:not(.landscape) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .media-grid:not(.landscape) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .details {
+    margin: 0.35rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
   }
 </style>

@@ -14,14 +14,21 @@ import ThemeToggle from "./ThemeToggle.astro";
       aspectRatio="105.87 / 35.52"
     />
 
-    <div id="header-actions">
-      <nav>
+    <header-navigation id="header-actions">
+      <nav id="header-navigation" aria-label="Main navigation">
         <NavLink href="/" label="Home" />
         <NavLink href="/projects/" label="Projects" />
         <NavLink href="/taste/" label="Taste" />
       </nav>
       <ThemeToggle />
-    </div>
+      <button class="menu-toggle" type="button" aria-controls="header-navigation" aria-expanded="false" aria-label="Open navigation">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+          <path class="menu-line menu-line-top" d="M4 6h16" />
+          <path class="menu-line menu-line-middle" d="M4 12h16" />
+          <path class="menu-line menu-line-bottom" d="M4 18h16" />
+        </svg>
+      </button>
+    </header-navigation>
 </header>
 
 <style>
@@ -31,6 +38,8 @@ import ThemeToggle from "./ThemeToggle.astro";
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: nowrap;
+        gap: 1rem;
 
         margin-inline: auto;
         position: sticky;
@@ -58,22 +67,175 @@ import ThemeToggle from "./ThemeToggle.astro";
       display: flex;
       align-items: center;
       gap: 1rem;
+      flex-shrink: 0;
     }
 
     nav {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        white-space: nowrap;
     }
 
-    @media (max-width: 600px) {
-      header {
-        flex-wrap: wrap;
+    .menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+    }
+
+    .menu-toggle:hover {
+      background: var(--color-surface);
+      color: var(--color-accent);
+    }
+
+    .menu-line {
+      transform-box: view-box;
+      transform-origin: 12px 12px;
+      transition:
+        transform 250ms ease,
+        opacity 200ms ease;
+    }
+
+    .menu-toggle[aria-expanded='true'] .menu-line-top {
+      transform: rotate(45deg) translateY(6px);
+    }
+
+    .menu-toggle[aria-expanded='true'] .menu-line-middle {
+      opacity: 0;
+    }
+
+    .menu-toggle[aria-expanded='true'] .menu-line-bottom {
+      transform: rotate(-45deg) translateY(-6px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-line {
+        transition: none;
+      }
+    }
+
+    .menu-toggle:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 40rem) {
+      #header-actions {
         gap: 0.5rem;
       }
 
+      .menu-toggle {
+        display: inline-flex;
+      }
+
       nav {
-        flex-wrap: wrap;
+        display: none;
+        position: absolute;
+        top: calc(100% - 0.5rem);
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        width: min(16rem, 100%);
+        padding: 0.25rem;
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+        background: var(--color-surface);
+        box-shadow: var(--thumbnail-shadow);
+      }
+
+      #header-actions[data-open] nav {
+        display: flex;
+      }
+
+      nav :global(a) {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding-block: 0.75rem;
+      }
+
+      nav :global(a:hover),
+      nav :global(a:focus-visible) {
+        background: var(--color-background);
       }
     }
 </style>
+
+<script>
+  class HeaderNavigation extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const options = { signal: this.controller.signal };
+      const button = this.querySelector<HTMLButtonElement>('.menu-toggle');
+      const nav = this.querySelector('nav');
+      if (!button || !nav) return;
+
+      const close = (restoreFocus = false) => {
+        this.removeAttribute('data-open');
+        button.setAttribute('aria-expanded', 'false');
+        button.setAttribute('aria-label', 'Open navigation');
+        if (restoreFocus) button.focus();
+      };
+
+      button.addEventListener('click', () => {
+        if (this.hasAttribute('data-open')) {
+          close();
+        } else {
+          this.setAttribute('data-open', '');
+          button.setAttribute('aria-expanded', 'true');
+          button.setAttribute('aria-label', 'Close navigation');
+          nav.querySelector<HTMLAnchorElement>('a')?.focus();
+        }
+      }, options);
+
+      nav.addEventListener('click', event => {
+        if (event.target instanceof Element && event.target.closest('a')) {
+          close(this.hasAttribute('data-open'));
+        }
+      }, options);
+
+      document.addEventListener('click', event => {
+        if (event.target instanceof Node && !this.contains(event.target)) close();
+      }, options);
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && this.hasAttribute('data-open')) {
+          event.preventDefault();
+          close(true);
+        }
+      }, options);
+
+      document.addEventListener('focusin', event => {
+        if (event.target instanceof Node && !this.contains(event.target)) close();
+      }, options);
+
+      const compact = matchMedia('(max-width: 40rem)');
+      compact.addEventListener('change', () => {
+        const focusInNav = nav.contains(document.activeElement);
+        close(compact.matches && focusInNav);
+        if (!compact.matches && document.activeElement === button) {
+          nav.querySelector<HTMLAnchorElement>('a')?.focus();
+        }
+      }, options);
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+    }
+  }
+
+  if (!customElements.get('header-navigation')) {
+    customElements.define('header-navigation', HeaderNavigation);
+  }
+</script>
