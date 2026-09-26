@@ -168,7 +168,7 @@ export const favouriteAlbums: Album[] = [
 
 export function coverUrl(
   releaseGroupId: string,
-  size: 250 | 500 | 1200 = 250,
+  size: 250 | 1200 = 250,
 ) {
-  return `https://coverartarchive.org/release-group/${releaseGroupId}/front-${size}`;
+  return `/assets/album-covers/${releaseGroupId}-${size}.jpg`;
 }

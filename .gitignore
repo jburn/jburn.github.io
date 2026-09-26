@@ -14,3 +14,4 @@ Desktop.ini
 dist/
 .astro/
 node_modules
+public/assets/album-covers/

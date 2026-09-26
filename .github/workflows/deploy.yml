@@ -37,6 +37,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore album artwork cache
+        uses: actions/cache@v4
+        with:
+          path: public/assets/album-covers
+          key: album-art-v1-${{ runner.os }}-${{ hashFiles('src/data/music.ts', 'scripts/cache-album-art.mjs') }}
+          restore-keys: |
+            album-art-v1-${{ runner.os }}-
+
       - name: Validate and build
         run: npm run check && npm run build
         env:

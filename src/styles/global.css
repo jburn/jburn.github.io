@@ -13,10 +13,6 @@ body {
     flex-direction: column;
     font-family: 'Manrope', sans-serif;
     padding-inline: 1rem;
-    background-color: var(--color-background);
-    background-image: var(--page-background-gradient);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
     color: var(--color-text);
 }
 
@@ -66,7 +62,28 @@ button {
 }
 
 html {
+  overflow-y: scroll;
   scrollbar-gutter: stable;
+  scrollbar-color: var(--color-muted) transparent;
+  background-color: var(--color-background);
+  background-image: var(--page-background-gradient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Keep the page background steady while named content animates. */
+html:not(.theme-changing)::view-transition-old(root),
+html:not(.theme-changing)::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html:not(.theme-changing)::view-transition-old(root) {
+  opacity: 0;
+}
+
+html:not(.theme-changing)::view-transition-new(root) {
+  opacity: 1;
 }
 
 /* Capture everything together, including Astro's named page content. */
