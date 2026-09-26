@@ -28,7 +28,7 @@ const animation = {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,9 +36,7 @@ const animation = {
     <ClientRouter />
     <script is:inline data-astro-rerun>
       {
-        let theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
+        let theme = 'dark';
         
         try {
           const saved = localStorage.getItem('theme');
@@ -71,6 +69,6 @@ const animation = {
 <script>
   document.addEventListener('astro:before-swap', event => {
     event.newDocument.documentElement.dataset.theme =
-      document.documentElement.dataset.theme ?? 'light';
+      document.documentElement.dataset.theme ?? 'dark';
   });
 </script>

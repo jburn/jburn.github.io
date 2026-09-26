@@ -71,6 +71,21 @@ html {
   background-repeat: no-repeat;
 }
 
+/* Keep the page background steady while named content animates. */
+html:not(.theme-changing)::view-transition-old(root),
+html:not(.theme-changing)::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html:not(.theme-changing)::view-transition-old(root) {
+  opacity: 0;
+}
+
+html:not(.theme-changing)::view-transition-new(root) {
+  opacity: 1;
+}
+
 /* Capture everything together, including Astro's named page content. */
 html.theme-changing * {
   view-transition-name: none !important;
