@@ -23,7 +23,9 @@ DISCOGS_USERNAME=
 DISCOGS_TOKEN=
 ```
 
-The Discogs token is optional for a public collection. Keep credentials out of version control. Metadata and collection data are fetched during development/build; deployed pages use the generated data, with external cover images and embedded players loaded by the browser.
+The Discogs token is optional for a public collection. Keep credentials out of version control. Metadata and collection data are fetched during development/build. Cover Art Archive images are downloaded before development/build and served locally; other external images and embedded players are loaded by the browser.
+
+Album covers are cached in `public/assets/album-covers/` (gitignored), with 250px thumbnails and 1200px dialog images. The first run takes longer; later runs download only missing covers. Run `npm run cache:album-art` after adding albums while the dev server is running. To refresh a cover, delete its cached files and rerun the command. GitHub Actions restores this cache between builds.
 
 ## Content
 
