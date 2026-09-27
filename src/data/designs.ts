@@ -40,47 +40,21 @@ export const designSections: DesignSection[] = [
         image: '/assets/designs/patches/wb_KLK.png',
         alt: 'Patch for a Wesibussi event in 2023',
       },
-      {
-        title: 'OTY Urheilujaos',
-        image: '/assets/designs/patches/oty_urheilujaos.png',
-        alt: 'Patch for a student association subdivision.',
-      },
-    ],
-  },
-  {
-    title: 'Social media',
-    description: 'A selection of graphics I’ve designed for Instagram posts over the years.',
-    items: [
-      {
-        title: 'Wesibussi Wall',
-        image: '/assets/designs/social/wb_wall.png',
-        alt: 'Social media graphic for Wesibussi event',
-      },
-      {
-        title: 'Wesibussi Donation',
-        image: '/assets/designs/social/wb_donate.png',
-        alt: 'Social media graphic for Wesibussi donation milestone.',
-      },
-      {
-        title: 'OTiT Recruitment Ad',
-        image: '/assets/designs/social/otit_recruit.png',
-        alt: 'Social media graphic for Wesibussi event',
-      },
-      {
-        title: 'OTY Teekkari Traditions\' Day',
-        image: '/assets/designs/social/tek_teekkari.png',
-        alt: 'Social media graphic for Wesibussi event',
-      },
     ],
   },
   {
     title: 'Other',
-    description: '',
+    description: 'Guild magazine covers, social media graphics',
     items: [
       {
         title: 'Terminaali 2/2024',
         image: '/assets/designs/other/terminaali2_24.png',
         alt: 'Cover art for guild magazine 2024',
+      },
+      {
+        title: 'Wesibussi Wall',
+        image: '/assets/designs/other/wb_wall.png',
+        alt: 'Social media graphic for Wesibussi event',
       },
       {
         title: 'Terminaali 35th Anniversary Edition',
