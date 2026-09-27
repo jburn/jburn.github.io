@@ -133,6 +133,9 @@
                 Math.max(y, innerHeight - y)
             );
 
+            root.style.setProperty('--theme-reveal-x', `${x}px`);
+            root.style.setProperty('--theme-reveal-y', `${y}px`);
+            root.style.setProperty('--theme-reveal-radius', `${radius}px`);
             root.classList.add('theme-changing');
 
             const transition = document.startViewTransition(applyTheme);
@@ -140,24 +143,15 @@
             try {
                 await transition.ready;
 
-                await root.animate(
-                {
-                    clipPath: [
-                    `circle(0px at ${x}px ${y}px)`,
-                    `circle(${radius}px at ${x}px ${y}px)`,
-                    ],
-                },
-                {
-                    duration: 600,
-                    easing: 'ease-in-out',
-                    pseudoElement: '::view-transition-new(root)',
-                }
-                ).finished;
+                await transition.finished;
             } catch {
                 // The theme still changes if the animation is skipped.
             } finally {
                 await transition.finished.catch(() => {});
                 root.classList.remove('theme-changing');
+                root.style.removeProperty('--theme-reveal-x');
+                root.style.removeProperty('--theme-reveal-y');
+                root.style.removeProperty('--theme-reveal-radius');
             }
             });
     });

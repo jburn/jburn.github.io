@@ -110,6 +110,23 @@ html.theme-changing::view-transition-old(root) {
 
 html.theme-changing::view-transition-new(root) {
   z-index: 2;
+  animation: theme-reveal 600ms ease-in-out both;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0px at var(--theme-reveal-x) var(--theme-reveal-y));
+  }
+
+  to {
+    clip-path: circle(var(--theme-reveal-radius) at var(--theme-reveal-x) var(--theme-reveal-y));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-changing::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 * {
