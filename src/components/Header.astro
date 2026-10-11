@@ -137,6 +137,10 @@ import ThemeToggle from "./ThemeToggle.astro";
 
     /* Leave room for all five links, the logo, and the theme control. */
     @media (max-width: 50rem) {
+      header::before {
+        inset-inline: -1rem;
+      }
+
       #header-actions {
         gap: 0.5rem;
       }
