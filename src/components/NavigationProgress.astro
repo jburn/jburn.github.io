@@ -1,0 +1,90 @@
+<div id="navigation-progress" transition:persist aria-hidden="true">
+  <span></span>
+</div>
+
+<style>
+  #navigation-progress {
+    position: fixed;
+    inset: 0 0 auto;
+    height: 3px;
+    z-index: 1000;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  #navigation-progress[data-loading] {
+    opacity: 1;
+  }
+
+  span {
+    display: block;
+    width: 40%;
+    height: 100%;
+    background: var(--color-accent);
+    transform: translateX(-100%);
+  }
+
+  [data-loading] span {
+    animation: navigation-progress 1.2s ease-in-out infinite;
+  }
+
+  @keyframes navigation-progress {
+    to {
+      transform: translateX(350%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #navigation-progress {
+      transition: none;
+    }
+
+    [data-loading] span {
+      animation: none;
+      transform: none;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let activeSignal: AbortSignal | undefined;
+
+  function finish() {
+    clearTimeout(timer);
+    activeSignal = undefined;
+    document.getElementById('navigation-progress')?.removeAttribute('data-loading');
+  }
+
+  document.addEventListener('astro:before-preparation', event => {
+    finish();
+    activeSignal = event.signal;
+
+    timer = setTimeout(() => {
+      if (!event.signal.aborted && !event.defaultPrevented) {
+        document.getElementById('navigation-progress')?.setAttribute('data-loading', '');
+      }
+    }, 180);
+
+    event.signal.addEventListener('abort', () => {
+      if (activeSignal === event.signal) finish();
+    }, { once: true });
+
+    const loader = event.loader;
+    event.loader = async () => {
+      try {
+        await loader();
+        if (event.defaultPrevented && activeSignal === event.signal) finish();
+      } catch (error) {
+        if (activeSignal === event.signal) finish();
+        throw error;
+      }
+    };
+  });
+
+  document.addEventListener('astro:page-load', finish);
+  window.addEventListener('pagehide', finish);
+</script>
