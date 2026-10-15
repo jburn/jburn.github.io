@@ -123,6 +123,23 @@ html.theme-changing::view-transition-new(root) {
   }
 }
 
+/* Touch devices fade between themes; desktop keeps the circular reveal. */
+@media (hover: none) and (pointer: coarse) {
+  html.theme-changing::view-transition-new(root) {
+    animation: theme-fade 300ms ease-in-out both;
+  }
+}
+
+@keyframes theme-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.theme-changing::view-transition-new(root) {
     animation: none;
