@@ -16,19 +16,19 @@ Sananen is a Finnish Wordle-style Android game built with Flutter and Dart. Play
 
 The game works offline without an account or backend. Word lists are bundled with the app, and daily progress, results, and statistics are stored locally in SQLite. The app is currently in private testing; public distribution is postponed for now.
 
-![Sananen main menu with daily and endless game modes](/assets/projects/sananen/main-menu.png)
+<img class="phone-screenshot" src="/assets/projects/sananen/main-menu.png" alt="Sananen main menu with daily and endless game modes" loading="lazy" />
 
 ## How it works
 
 Players choose a word length and enter guesses using the on-screen keyboard. Each guess is checked against the accepted vocabulary before the tiles reveal the result. Repeated letters are evaluated against the number of occurrences in the answer, so an extra copy of a letter does not receive misleading feedback.
 
-![A five-letter game in progress](/assets/projects/sananen/5-letter.png)
+<img class="phone-screenshot" src="/assets/projects/sananen/5-letter.png" alt="A five-letter game in progress" loading="lazy" />
 
 Daily games can be resumed after closing the app. Completed results contribute to separate statistics for each word length, including win rate, guess distribution, and daily participation streaks. Players can share their results and open the answer's definition in Wikisanakirja.
 
 Settings include alternative colour palettes, optional haptic feedback, local reminders, and game-data export and import.
 
-![The result screen after completing a puzzle](/assets/projects/sananen/5-win.png)
+<img class="phone-screenshot" src="/assets/projects/sananen/5-win.png" alt="The result screen after completing a puzzle" loading="lazy" />
 
 ## Design decisions
 
