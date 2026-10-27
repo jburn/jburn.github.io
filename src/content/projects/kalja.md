@@ -7,7 +7,7 @@ technologies:
   - GitHub Actions
   - PyPI
 github: https://github.com/jburn/kalja
-order: 4
+order: 99
 ---
 
 ## Overview

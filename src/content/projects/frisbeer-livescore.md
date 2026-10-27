@@ -7,7 +7,7 @@ technologies:
   - SQLite
   - GitHub Actions
 github: https://github.com/jburn/frisbeer_live_score
-order: 2
+order: 97
 ---
 
 ## Overview
