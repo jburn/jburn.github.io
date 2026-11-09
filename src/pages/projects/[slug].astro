@@ -18,6 +18,10 @@ interface Props {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const links = [
+  ...(project.data.github ? [{ label: 'View on GitHub', url: project.data.github }] : []),
+  ...(project.data.links ?? []),
+];
 ---
 
 <Layout title={project.data.title}>
@@ -32,10 +36,14 @@ const { Content } = await render(project);
 
     <Content />
 
-    {project.data.github && (
-        <a class="github-button" href={project.data.github}>
-            View on GitHub <span aria-hidden="true">↗</span>
-        </a>
+    {links.length > 0 && (
+      <div class="project-links">
+        {links.map(link => (
+          <a class="project-link" href={link.url}>
+            {link.label} <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
     )}
   </article>
 </Layout>
@@ -99,11 +107,17 @@ article :global(:not(pre) > code) {
   font-weight: 500;
 }
 
-.github-button {
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.project-link {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 2rem;
   padding: 0.75rem 1.25rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -114,18 +128,18 @@ article :global(:not(pre) > code) {
   transition: border-color 200ms ease, color 200ms ease;
 }
 
-.github-button:hover {
+.project-link:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
-.github-button:focus-visible {
+.project-link:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .github-button {
+  .project-link {
     transition: none;
   }
 }
