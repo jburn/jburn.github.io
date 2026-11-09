@@ -1,7 +1,7 @@
 ---
 title: Free Caffeine Tracker
 summary: Garmin watch application to track caffeine consumption and bedtime level. 
-image: /assets/projects/kyykka-editor/editor.png
+image: /assets/projects/free-caffeine-tracker/thumbnail.png
 technologies:
   - Monkey C
   - Garmin Connect IQ
@@ -15,7 +15,7 @@ order: 2
 
 **Free Caffeine Tracker** is a free Garmin watch app that helps users understand their caffeine intake and plan around bedtime. It combines quick drink logging, estimated caffeine levels, an interactive timeline and long-term consumption history.
 
-![Dashboard](/assets/projects/free-caffeine-tracker/dashboard.png)
+<img class="watch-photo" src="/assets/projects/free-caffeine-tracker/dashboard_on_watch.png" alt="Dashboard" width="754" height="839" loading="lazy" />
 
 Built with **Monkey C and Garmin Connect IQ SDK**, the app supports 86 round-watch models and 24 interface languages. All features work offline, with no accounts, advertising, subscriptions or data collection.
 
@@ -25,17 +25,17 @@ Users log a favorite drink, enter a custom caffeine amount or record an earlier 
 
 The dashboard shows current estimated caffeine, the projected amount at bedtime and total daily intake. A pannable graph visualizes past consumption and the estimated decline ahead, with personal thresholds and bedtime markers for context.
 
-![Caffeine graph](/assets/projects/free-caffeine-tracker/graph.png)
+<img class="watch-screenshot" src="/assets/projects/free-caffeine-tracker/graph.png" alt="Caffeine graph" width="454" height="454" loading="lazy" />
 
 Configurable glances provide quick access without opening the full app. Compatible watches can also share readings with supported watch faces. Recent drinks remain editable, while older intake is summarized into daily, monthly and yearly totals to keep storage bounded.
 
-![Daily glance](/assets/projects/free-caffeine-tracker/glance_daily.png)
+<img class="watch-screenshot" src="/assets/projects/free-caffeine-tracker/glance_daily.png" alt="Daily glance" width="260" height="260" loading="lazy" />
 
-![Bedtime glance](/assets/projects/free-caffeine-tracker/glance_bedtime.png)
+<img class="watch-screenshot" src="/assets/projects/free-caffeine-tracker/glance_bedtime.png" alt="Bedtime glance" width="260" height="260" loading="lazy" />
 
 The user can view their 7-day, weekly, monthly and yearly history. Old drink entries are condensed first into weekly, then into monthly and then into yearly averages to save memory.
 
-![7-day bar graph](/assets/projects/free-caffeine-tracker/7_days.png)
+<img class="watch-screenshot" src="/assets/projects/free-caffeine-tracker/7_days.png" alt="7-day bar graph" width="454" height="454" loading="lazy" />
 
 ## Design decisions
 
